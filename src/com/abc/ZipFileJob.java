@@ -3,17 +3,21 @@ package com.abc;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import com.abc.FileTUtils;
 
 
 import com.abc.util.TRSFileUtil;
 import com.abc.util.ZipUtil;
+import org.apache.log4j.Logger;
 
 
 public class ZipFileJob extends TimerTask {
-
-
+    private static final Logger logger = Logger.getLogger(ZipFileJob.class);
+    public static ConcurrentMap<String, String> custMaps = new ConcurrentHashMap();
+    public static ConcurrentMap<String, String> CustMapsISnot = new ConcurrentHashMap();
     @Override
     public void run() {
         //            ZipUtil.unZipFileToConfigPath();
@@ -25,16 +29,10 @@ public class ZipFileJob extends TimerTask {
 //        ZipUtil.moveDelete();
 //            NewsParserJob.newRun();
         //----------
-        String txtfilepath = InitParam.CUST_PATH+"\\"+"custname.txt";
-        Map<String,String> txtmap = new HashMap<String,String>();
-        try {
-            txtmap = TRSFileUtil.getBigTxtMap(txtfilepath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         String newstr =  FileTUtils.getFileContent(InitParam.ThreadNEWS);
-if(newstr.equals("NEWS")) {
-    Map<String, String> finalTxtmap1 = txtmap;
+if(newstr.equals("NEWS")&&CustMapsISnot.get("isnot").equals("1")) {
+    Map<String, String> finalTxtmap1 = custMaps;
     Thread t1 = new Thread() {
             public void run() {
             try {
@@ -55,8 +53,8 @@ if(newstr.equals("NEWS")) {
 }
 
 String wxstr = FileTUtils.getFileContent(InitParam.ThreadWX);
-if(wxstr.equals("WX")) {
-    Map<String, String> finalTxtmap2 = txtmap;
+if(wxstr.equals("WX")&&CustMapsISnot.get("isnot").equals("1")) {
+    Map<String, String> finalTxtmap2 = custMaps;
     Thread t2 = new Thread() {
         public void run() {
             try {
@@ -77,8 +75,8 @@ if(wxstr.equals("WX")) {
 }
 
 String wbstr = FileTUtils.getFileContent(InitParam.ThreadWB);
-if(wbstr.equals("WB")) {
-    Map<String, String> finalTxtmap = txtmap;
+if(wbstr.equals("WB")&&CustMapsISnot.get("isnot").equals("1")) {
+    Map<String, String> finalTxtmap = custMaps;
     Thread t3 = new Thread() {
         public void run() {
             try {
@@ -100,8 +98,8 @@ if(wbstr.equals("WB")) {
 
 
 String xhstr = FileTUtils.getFileContent(InitParam.ThreadXH);
-if(xhstr.equals("XH")){
-    Map<String, String> finalTxtmap3 = txtmap;
+if(xhstr.equals("XH")&&CustMapsISnot.get("isnot").equals("1")){
+    Map<String, String> finalTxtmap3 = custMaps;
     Thread t4 = new Thread() { public void run() {
             try {
 

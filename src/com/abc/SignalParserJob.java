@@ -237,6 +237,14 @@ public class SignalParserJob extends TimerTask {
           File file = new File(InitParam.path + "/" + InitParam.xinhaofilename);
           Map<String,String> xinhaomap= TRSFileUtil.getTxtMapKV(file);
           datamap = this.parserTRSData(map,xinhaomap);
+          for(Object key:datamap.keySet()){
+            String keyy = key.toString();
+            String value = datamap.get(keyy).toString();
+            if(!StringUtils.isNotBlank(value) || value.equals("null")){
+              value = "";
+            }
+            datamap.put(key,value);
+          }
         } while(datamap == null);
 
         String line = "";

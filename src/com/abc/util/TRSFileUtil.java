@@ -1,9 +1,6 @@
 package com.abc.util;
 
-import com.abc.InitParam;
-import com.abc.ParserUtil;
-import com.abc.SignalParserJob;
-import com.abc.TRSParser;
+import com.abc.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
@@ -14,6 +11,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.zip.ZipFile;
 
 /**
  * 对trs文件进行解析
@@ -70,7 +68,9 @@ public class TRSFileUtil {
 //            System.out.println(trsCustJson);
             }
         }else {
-            System.out.println("企业名单为空,请检查企业名单");
+            if (txtmap.size()<=0) {
+                System.out.println("企业名单为空,请检查企业名单");
+            }
         }
 
         if(txtmap.size()>0 && dataList!=null) {
@@ -101,7 +101,9 @@ public class TRSFileUtil {
                 }
             }
         }else {
-            System.out.println("企业名单为空,请检查企业名单");
+            if (txtmap.size()<=0) {
+                System.out.println("企业名单为空,请检查企业名单");
+            }
         }
 
         return dataList;
@@ -629,6 +631,7 @@ public class TRSFileUtil {
      */
     public static Map<String,String> getTxtMap(File file) throws IOException {
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");
+//        LineIterator it = FileUtils.lineIterator(file, "GBK");
         String line = "";
         Map<String,String> filtermap = new HashMap<String,String>();
         while(it.hasNext()) {
@@ -670,6 +673,8 @@ public class TRSFileUtil {
                         TRSFileUtil.custMaps.put(name, code);
                         ParserUtil.custMapsnumkey.put(code, name);
                         SignalParserJob.custMaps.put(name,code);
+                        ZipFileJob.custMaps.put(name,code);
+                        ZipFileJob.CustMapsISnot.put("isnot","1");
                     }
                 }
             }
@@ -681,7 +686,6 @@ public class TRSFileUtil {
     }
     /**
      * 获取txt文件内容   存放到map集合里面   id放在key  值放到value
-     * @param file
      * @return
      * @throws IOException
      */

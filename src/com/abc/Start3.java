@@ -1,21 +1,31 @@
 package com.abc;
 
 import com.abc.util.EnterpriseNameUtil;
+import com.abc.util.TRSFileUtil;
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import java.util.Date;
-import java.util.Timer;
+import java.util.*;
 
 public class Start3 {
-
+    private static final Logger logger = Logger.getLogger(Start3.class);
     public static void main(String[] args) throws IOException {
         InitParam.init();
         EnterpriseNameUtil.initMakeCustFile();
+
+        logger.info("***************程序开始执行******************");
+        String txtfilepath = InitParam.CUST_PATH+"\\"+"custname.txt";
+        try {
+            System.out.println("企业名单文件路径-->>"+txtfilepath);
+            TRSFileUtil.getBigTxtMap(txtfilepath);
+            logger.info("***************企业名单文件读取完成******************");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 //    //-----新增---------
 //    //定时5分钟一次的解压原文件  并把原文件拷贝到目标位置
         Timer Filetimer = new Timer();

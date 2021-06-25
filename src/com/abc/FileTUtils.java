@@ -31,7 +31,7 @@ public class FileTUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        ZipFileJob.CustMapsISnot.put("isnot","0");
     }
 
 

@@ -239,6 +239,14 @@ public class WeiboParserJob extends TimerTask {
           Map<String, Object> map = (Map)var39.next();
 //          datamap = this.parserData(map);
           datamap = this.parserTRSData(map,txtmap);
+          for(Object key:datamap.keySet()){
+            String keyy = key.toString();
+            String value = datamap.get(keyy).toString();
+            if(!StringUtils.isNotBlank(value) || value.equals("null")){
+              value = "";
+            }
+            datamap.put(key,value);
+          }
         } while(datamap == null);
         List<Map<String, String>> splits = this.splitData(datamap);
         if(splits.size()==0) {

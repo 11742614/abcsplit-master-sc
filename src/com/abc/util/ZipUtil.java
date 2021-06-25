@@ -2,6 +2,7 @@ package com.abc.util;
 
 import com.abc.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import javax.xml.crypto.Data;
 import java.awt.*;
@@ -16,6 +17,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
+    private static final Logger logger = Logger.getLogger(ZipUtil.class);
     public static void main(String[] args) throws IOException, ParseException {
         //原始文件
         String p1 = "D:\\datatemp\\init_data\\TRS_NEWS_TRS_20200721143206164_100.zip";
@@ -651,7 +653,6 @@ public static void unZipAllThread(){
         // 开始解压
 
         ZipFile zipFile = null;
-
         try {
 
             zipFile = new ZipFile(srcFile);
@@ -721,9 +722,9 @@ public static void unZipAllThread(){
 //            System.out.println("解压完成，耗时：" + (end - start) +" ms");
 
         } catch (Exception e) {
-
-            throw new RuntimeException("unzip error from ZipUtils", e);
-
+            String filename = srcFile.getName();
+            logger.info("**********************该压缩文件有问题，文件名————>>>"+filename+"**********************");
+//            throw new RuntimeException("unzip error from ZipUtils", e);
         } finally {
 
             if(zipFile != null){

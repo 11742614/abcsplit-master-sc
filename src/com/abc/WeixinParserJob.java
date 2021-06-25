@@ -241,6 +241,14 @@ public class WeixinParserJob extends TimerTask {
 //          datamap = this.parserData(map);
           //新增
           datamap = this.parserTRSData(map,txtmap);
+          for(Object key:datamap.keySet()){
+            String keyy = key.toString();
+            String value = datamap.get(keyy).toString();
+            if(!StringUtils.isNotBlank(value) || value.equals("null")){
+              value = "";
+            }
+            datamap.put(key,value);
+          }
         } while(datamap == null);
         List<Map<String, String>> splits = this.splitData(datamap);
         if(splits.size()==0) {
