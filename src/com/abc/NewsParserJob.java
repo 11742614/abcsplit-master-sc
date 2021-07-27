@@ -529,7 +529,7 @@ public class NewsParserJob extends TimerTask {
     //-----获取8位的日期-------
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     LocalDate date = null;
-    if(!strtemp.equals("")) {
+    if(StringUtils.isNotBlank(strtemp) && !strtemp.equals("null")) {
       date = LocalDate.parse(strtemp, formatter);
       formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
       strtemp = date.format(formatter);
@@ -544,7 +544,7 @@ public class NewsParserJob extends TimerTask {
     SimpleDateFormat formatter1=new SimpleDateFormat("HHmmss");
     SimpleDateFormat formatter2=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     try {
-      if(!strtemp.equals("")) {
+      if(StringUtils.isNotBlank(strtemp) && !strtemp.equals("null")) {
         strtemp = formatter1.format(formatter2.parse(strtemp));
       }
     } catch (ParseException e) {
@@ -559,7 +559,7 @@ public class NewsParserJob extends TimerTask {
     }
     //-----获取8位的日期-------
     formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    if(!strtemp.equals("")) {
+    if(StringUtils.isNotBlank(strtemp) && !strtemp.equals("null")) {
       date = LocalDate.parse(strtemp, formatter);
       formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
       strtemp = date.format(formatter);
@@ -574,7 +574,7 @@ public class NewsParserJob extends TimerTask {
     }
     //----获取6位的时间----
     try {
-      if(!strtemp.equals("")) {
+      if(StringUtils.isNotBlank(strtemp) && !strtemp.equals("null")) {
         strtemp = formatter1.format(formatter2.parse(strtemp));
       }
     } catch (ParseException e) {

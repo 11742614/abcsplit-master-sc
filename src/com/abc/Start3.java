@@ -13,6 +13,7 @@ import java.util.*;
 public class Start3 {
     private static final Logger logger = Logger.getLogger(Start3.class);
     public static void main(String[] args) throws IOException {
+        logger.info("***************程序开始初始化******************");
         InitParam.init();
         EnterpriseNameUtil.initMakeCustFile();
 

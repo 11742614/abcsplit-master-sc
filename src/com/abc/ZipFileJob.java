@@ -1,6 +1,7 @@
 package com.abc;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +30,13 @@ public class ZipFileJob extends TimerTask {
 //        ZipUtil.moveDelete();
 //            NewsParserJob.newRun();
         //----------
-
+        try {
+            ZipUtil.logBak();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String newstr =  FileTUtils.getFileContent(InitParam.ThreadNEWS);
 if(newstr.equals("NEWS")&&CustMapsISnot.get("isnot").equals("1")) {
     Map<String, String> finalTxtmap1 = custMaps;

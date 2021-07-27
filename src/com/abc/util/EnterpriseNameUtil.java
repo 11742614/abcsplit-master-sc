@@ -23,7 +23,7 @@ public class EnterpriseNameUtil {
     }
 
     public static void initMakeCustFile() throws IOException {
-        String zipfile = InitParam.CUST_MODE_PATH;
+//        String zipfile = InitParam.CUST_MODE_PATH;
         ArrayList<String> list = ZipUtil.getFile(InitParam.CUST_MODE_PATH);
 
         if(list.size()>0) {
@@ -69,6 +69,9 @@ public class EnterpriseNameUtil {
         }
 
     }
+
+
+
 
     /**获取企业名单里面的内容，把id和企业名存到map集合里面
      *

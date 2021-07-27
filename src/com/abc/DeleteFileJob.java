@@ -11,6 +11,7 @@ public class DeleteFileJob extends TimerTask {
     public void run() {
         try {
             ZipUtil.TimeDelDir();
+            ZipUtil.TimeDellog();
         } catch (ParseException e) {
             e.printStackTrace();
         }

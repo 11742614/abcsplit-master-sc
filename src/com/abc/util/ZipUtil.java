@@ -1,6 +1,7 @@
 package com.abc.util;
 
 import com.abc.*;
+import org.apache.axis.utils.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -75,7 +76,20 @@ public class ZipUtil {
         String result = format.format(today);
         return result;
     }
-
+    /**
+     * 获取过去第几天的日期格式yyyyMMdd
+     *
+     * @param past
+     * @return
+     */
+    public static String getPastDateTwo(int past) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) - past);
+        Date today = calendar.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        String result = format.format(today);
+        return result;
+    }
 
 
 
@@ -1052,7 +1066,155 @@ public static ArrayList getInitFileCPPath() {
 //            System.out.println("文件"+fileName+"不存在，删除失败！" );
             return false;
         }
+    }
+
+    public static void logBak() throws ParseException, IOException {
+        Properties props = new Properties();
+        String configname = "abc.ini";
+        try {
+            props.load(new InputStreamReader(InitParam.class.getResourceAsStream("/" + configname), "UTF-8"));
+        } catch (IOException var28) {
+            var28.printStackTrace();
+            logger.error("找不到配置文件" + configname);
+        }
+        String logpath = props.getProperty("logpath");
+        String logname = props.getProperty("logname");
+        if(logpath==null || logpath=="null" || logpath.equals("")){
+            logpath = "logs";
+            logname = "abc.log";
+        }
+        String file2 = logpath;
+        String file = logpath+"\\"+logname;
+//        ZipUtil.copyFileUsingFileStreams(file,cpfile);
+
+//        ZipUtil.clearInfoForFile(cpfile);
+        SimpleDateFormat nowdate= new SimpleDateFormat("yyyyMMdd");
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat yesdate= new SimpleDateFormat("yyyyMMdd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+
+
+//
+//        if (yesdate1.compareTo(nowdate2) > 0) {
+//            System.out.println("Date1 is after Date2");
+//        } else if (yesdate1.compareTo(nowdate2) < 0) {
+//            System.out.println("Date1 is before Date2");
+//        } else if (yesdate1.compareTo(nowdate2) == 0) {
+//            System.out.println("Date1 is equal to Date2");
+//        } else {
+//            System.out.println("咋到这的？");
+//        }
+
+        ArrayList<String> resultFileName = new ArrayList<String>();
+        File file1 = new File(file2);
+        /**
+         * 判断
+         */
+        int bakfile = 0;
+        resultFileName = ZipUtil.ergodic(file1,resultFileName);
+        for (int i = 0; i < resultFileName.size(); i++) {
+            String filename = resultFileName.get(i);
+            String yestdate = yesdate.format(date).toString();
+            boolean isday=filename.contains(yestdate);
+            if(!isday){
+                bakfile++;
+            }
+        }
+
+        if(bakfile == resultFileName.size()) {
+            String yestdate = yesdate.format(date).toString();
+            String cpfile = file + ".bak_" + yestdate;
+            copyFileUsingFileStreams(file, cpfile);
+            clearInfoForFile(file);
+        }
+
+        System.out.println();
 
 
     }
+
+    public static void copyFileUsingFileStreams(String sourcestr, String deststr) throws IOException {
+        File source = new File(sourcestr);
+        File dest = new File(deststr);
+        InputStream input = null;
+        OutputStream output = null;
+        try {
+            input = new FileInputStream(source);
+            output = new FileOutputStream(dest);
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = input.read(buf))!= -1) {
+                output.write(buf, 0, bytesRead);
+            }
+        } finally {
+            input.close();
+            output.close();
+        }
+    }
+
+    public static void clearInfoForFile(String fileName) {
+        File file =new File(fileName);
+        try {
+            if(!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWriter =new FileWriter(file);
+            fileWriter.write("");
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void TimeDellog() throws ParseException {
+        Properties props = new Properties();
+        String configname = "abc.ini";
+        try {
+            props.load(new InputStreamReader(InitParam.class.getResourceAsStream("/" + configname), "UTF-8"));
+        } catch (IOException var28) {
+            var28.printStackTrace();
+            logger.error("找不到配置文件" + configname);
+        }
+        String logpath = props.getProperty("logpath");
+        String logname = props.getProperty("logname");
+        if(logpath==null || logpath=="null" || logpath.equals("")){
+            logpath = "logs";
+            logname = "abc.log";
+        }
+        String file2 = logpath;
+        ArrayList<String> list = new ArrayList<String>();
+        File file1 = new File(file2);
+        /**
+         * 判断
+         */
+        int bakfile = 0;
+        list = ZipUtil.ergodic(file1,list);
+        for (int i = 0; i < list.size(); i++) {
+            File file = new File(list.get(i));
+            if (file.exists()) {
+                //文件名
+                String dirname = list.get(i).substring(list.get(i).lastIndexOf("\\")+1,list.get(i).length());
+                int deltime = (int)InitParam.CPFile_Time;
+                String deldirname= getPastDateTwo(deltime);
+                if(dirname.contains("bak")) {
+                    String nowTime = dirname.substring(dirname.indexOf("_")+1,dirname.length());
+                    String delTime = new String(deldirname);
+                    SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+                    Date sd1 = df.parse(nowTime);
+                    Date sd2 = df.parse(delTime);
+                    //如果文件夹日期是7天前的就删除
+                    if (sd1.before(sd2)) {
+                        delFileDir(file);
+                    }
+                }
+            }
+        }
+
+    }
+
 }
