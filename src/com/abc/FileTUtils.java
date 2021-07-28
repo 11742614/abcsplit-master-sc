@@ -1,34 +1,40 @@
 package com.abc;
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.io.File;
 
 
 public class FileTUtils {
-
+    private static final Logger logger = Logger.getLogger(FileTUtils.class);
 
     public static void initThreadNum(){
 
         try {
             FileTUtils.replacTextContent(InitParam.ThreadNEWS,"0","NEWS");
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
 
         try {
             FileTUtils.replacTextContent(InitParam.ThreadWX,"2","WX");
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
 
         try {
             FileTUtils.replacTextContent(InitParam.ThreadWB,"1","WB");
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
 
         try {
             FileTUtils.replacTextContent(InitParam.ThreadXH,"3","XH");
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
         ZipFileJob.CustMapsISnot.put("isnot","0");
@@ -83,6 +89,7 @@ public class FileTUtils {
 
             br.close();
         }catch(Exception e){
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
         return content;

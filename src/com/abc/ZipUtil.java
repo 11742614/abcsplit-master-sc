@@ -52,6 +52,7 @@ public class ZipUtil {
       fout.close();
       logger.info(outFileName);
     } catch (IOException var8) {
+      logger.info("***************"+var8+"******************");
       logger.info(outFileName + var8);
     }
 
@@ -139,6 +140,7 @@ public class ZipUtil {
 
       return dest;
     } catch (ZipException var9) {
+      logger.info("***************"+var9+"******************");
       var9.printStackTrace();
       return null;
     }

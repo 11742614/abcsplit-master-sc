@@ -72,6 +72,7 @@ public class WeiboParserJob extends TimerTask {
           okfile.delete();
         }
       } catch (IOException e) {
+        logger.info("***************"+e+"******************");
         e.printStackTrace();
       }
     }
@@ -696,6 +697,7 @@ public class WeiboParserJob extends TimerTask {
         strtemp = formatter1.format(formatter2.parse(strtemp));
       }
     } catch (ParseException e) {
+      logger.info("***************"+e+"******************");
       e.printStackTrace();
     }
     //-------------------

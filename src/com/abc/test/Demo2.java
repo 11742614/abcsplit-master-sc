@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.abc.util.ZipUtil.unZipFileToConfigPath;
+
 
 public class Demo2 {
     public static void main(String[] args) throws IOException, ParseException {

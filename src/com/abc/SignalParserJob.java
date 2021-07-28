@@ -197,6 +197,7 @@ public class SignalParserJob extends TimerTask {
 //                SIGNALsplitwriter.close();
 //              }
             } catch (IOException var36) {
+              logger.info("***************"+var36+"******************");
               logger.error(var36.getMessage());
               return false;
             }
@@ -226,6 +227,7 @@ public class SignalParserJob extends TimerTask {
               logger.info("成功转换数据文件:" + filename);
               return true;
             } catch (IOException var35) {
+              logger.info("***************"+var35+"******************");
               logger.error(var35.getMessage());
               return false;
             }
@@ -332,6 +334,7 @@ public class SignalParserJob extends TimerTask {
     try {
       writer.append(line + InitParam.RN_SM + "\n");
     } catch (IOException var4) {
+      logger.info("***************"+var4+"******************");
       var4.printStackTrace();
     }
 
@@ -840,6 +843,7 @@ public class SignalParserJob extends TimerTask {
         strtemp = formatter1.format(formatter2.parse(strtemp));
       }
     } catch (ParseException e) {
+      logger.info("***************"+e+"******************");
       e.printStackTrace();
     }
     //-------------------
@@ -875,6 +879,7 @@ public class SignalParserJob extends TimerTask {
         strtemp = formatter1.format(formatter2.parse(strtemp));
       }
     } catch (ParseException e) {
+      logger.info("***************"+e+"******************");
       e.printStackTrace();
     }
     //-------------------

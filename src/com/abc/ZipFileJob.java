@@ -51,6 +51,7 @@ if(newstr.equals("NEWS")&&CustMapsISnot.get("isnot").equals("1")) {
                 try {
                     FileTUtils.replacTextContent(InitParam.ThreadNEWS,"0","NEWS");
                 } catch (IOException e) {
+                    logger.info("***************"+e+"******************");
                     e.printStackTrace();
                 }
             }
@@ -73,6 +74,7 @@ if(wxstr.equals("WX")&&CustMapsISnot.get("isnot").equals("1")) {
                 try {
                     FileTUtils.replacTextContent(InitParam.ThreadWX,"2","WX");
                 } catch (IOException e) {
+                    logger.info("***************"+e+"******************");
                     e.printStackTrace();
                 }
             }
@@ -95,6 +97,7 @@ if(wbstr.equals("WB")&&CustMapsISnot.get("isnot").equals("1")) {
                 try {
                     FileTUtils.replacTextContent(InitParam.ThreadWB,"1","WB");
                 } catch (IOException e) {
+                    logger.info("***************"+e+"******************");
                     e.printStackTrace();
                 }
             }
@@ -117,6 +120,7 @@ if(xhstr.equals("XH")&&CustMapsISnot.get("isnot").equals("1")){
                 try {
                     FileTUtils.replacTextContent(InitParam.ThreadXH,"3","XH");
                 } catch (IOException e) {
+                    logger.info("***************"+e+"******************");
                     e.printStackTrace();
                 }
             }

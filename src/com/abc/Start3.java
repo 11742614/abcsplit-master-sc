@@ -24,6 +24,7 @@ public class Start3 {
             TRSFileUtil.getBigTxtMap(txtfilepath);
             logger.info("***************企业名单文件读取完成******************");
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
 
@@ -45,7 +46,7 @@ public class Start3 {
         //得到定时器实例
         Timer custTime = new Timer();
         custTime.schedule(new EnterpriseNameJob(), date.getTime(), daySpan);
-
+//        custTime.schedule(new EnterpriseNameJob(), date.getTime());
 
         //----------
         Timer dictimer = new Timer();
@@ -62,6 +63,7 @@ public class Start3 {
             fileWriter.flush();
             fileWriter.close();
         } catch (IOException var9) {
+            logger.info("***************"+var9+"******************");
             var9.printStackTrace();
         }
 

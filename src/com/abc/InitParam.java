@@ -20,6 +20,9 @@ import org.apache.log4j.Logger;
 
 public class InitParam {
   private static final Logger logger = Logger.getLogger(InitParam.class);
+  public static String LOCAL_CUST_MODE_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/test";
+  public static String LOCAL_CUST_FILTER_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123";
+  public static String MAX_FILE = "500";
   public static String ThreadNEWS = "D:/datatemp/abc_data/num.txt";
   public static String ThreadWB = "D:/datatemp/abc_data/num.txt";
   public static String ThreadWX = "D:/datatemp/abc_data/num.txt";
@@ -146,6 +149,9 @@ public class InitParam {
     CPFile_Time = Long.valueOf(CPFile_TimeL).longValue();
     NEWS_PATH = props.getProperty("NEWS_PATH");
     ThreadNEWS = props.getProperty("ThreadNEWS");
+    LOCAL_CUST_FILTER_PATH = props.getProperty("LOCAL_CUST_FILTER_PATH");
+    MAX_FILE = props.getProperty("MAX_FILE");
+    LOCAL_CUST_MODE_PATH = props.getProperty("LOCAL_CUST_MODE_PATH");
     ThreadWB = props.getProperty("ThreadWB");
     ThreadWX = props.getProperty("ThreadWX");
     ThreadXH = props.getProperty("ThreadXH");

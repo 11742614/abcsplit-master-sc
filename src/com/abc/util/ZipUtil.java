@@ -183,43 +183,48 @@ public class ZipUtil {
         //使用apache的FileUtils工具
         try {
            copyFileUsingFileChannels(startFile,endFile);
-            if (startPath.contains("NEWS") && startPath.indexOf(".ok")!=-1){
-                String newpath = InitParam.NEWS_PATH;
-                newpath = newpath.replaceAll("/","\\\\");
-                if(newpath.lastIndexOf("\\")!=newpath.length()){
-                    newpath = newpath+"\\";
-                }
-                newpath = newpath+startFile.getName();
-                File newsend=new File(newpath);
-                copyFileUsingFileChannels(startFile,newsend);
-            }else if(startPath.contains("WB") && startPath.indexOf(".ok")!=-1){
-                String newpath = InitParam.WEIBO_PATH;
-                newpath = newpath.replaceAll("/","\\\\");
-                if(newpath.lastIndexOf("\\")!=newpath.length()){
-                    newpath = newpath+"\\";
-                }
-                newpath = newpath+startFile.getName();
-                File weiboend=new File(newpath);
-                copyFileUsingFileChannels(startFile,weiboend);
-            }else if(startPath.contains("WX") && startPath.indexOf(".ok")!=-1){
-                String newpath = InitParam.WEIXIN_PATH;
-                newpath = newpath.replaceAll("/","\\\\");
-                if(newpath.lastIndexOf("\\")!=newpath.length()){
-                    newpath = newpath+"\\";
-                }
-                newpath = newpath+startFile.getName();
-                File weixinend=new File(newpath);
-                copyFileUsingFileChannels(startFile,weixinend);
-            }else if((startPath.contains("XH") || startPath.contains("ZQ") )&& startPath.indexOf(".ok")!=-1){
-                String newpath = InitParam.SIGNAL_PATH;
-                newpath = newpath.replaceAll("/","\\\\");
-                if(newpath.lastIndexOf("\\")!=newpath.length()){
-                    newpath = newpath+"\\";
-                }
-                newpath = newpath+startFile.getName();
-                File signalend=new File(newpath);
-                copyFileUsingFileChannels(startFile,signalend);
-            }
+            deleteFile(startFile.toString());
+//            if (startPath.contains("NEWS") && startPath.indexOf(".ok")!=-1){
+//                String newpath = InitParam.NEWS_PATH;
+//                newpath = newpath.replaceAll("/","\\\\");
+//                if(newpath.lastIndexOf("\\")!=newpath.length()){
+//                    newpath = newpath+"\\";
+//                }
+//                newpath = newpath+startFile.getName();
+//                File newsend=new File(newpath);
+//                copyFileUsingFileChannels(startFile,newsend);
+//                deleteFile(startFile.toString());
+//            }else if(startPath.contains("WB") && startPath.indexOf(".ok")!=-1){
+//                String newpath = InitParam.WEIBO_PATH;
+//                newpath = newpath.replaceAll("/","\\\\");
+//                if(newpath.lastIndexOf("\\")!=newpath.length()){
+//                    newpath = newpath+"\\";
+//                }
+//                newpath = newpath+startFile.getName();
+//                File weiboend=new File(newpath);
+//                copyFileUsingFileChannels(startFile,weiboend);
+//                deleteFile(startFile.toString());
+//            }else if(startPath.contains("WX") && startPath.indexOf(".ok")!=-1){
+//                String newpath = InitParam.WEIXIN_PATH;
+//                newpath = newpath.replaceAll("/","\\\\");
+//                if(newpath.lastIndexOf("\\")!=newpath.length()){
+//                    newpath = newpath+"\\";
+//                }
+//                newpath = newpath+startFile.getName();
+//                File weixinend=new File(newpath);
+//                copyFileUsingFileChannels(startFile,weixinend);
+//                deleteFile(startFile.toString());
+//            }else if((startPath.contains("XH") || startPath.contains("ZQ") )&& startPath.indexOf(".ok")!=-1){
+//                String newpath = InitParam.SIGNAL_PATH;
+//                newpath = newpath.replaceAll("/","\\\\");
+//                if(newpath.lastIndexOf("\\")!=newpath.length()){
+//                    newpath = newpath+"\\";
+//                }
+//                newpath = newpath+startFile.getName();
+//                File signalend=new File(newpath);
+//                copyFileUsingFileChannels(startFile,signalend);
+//                deleteFile(startFile.toString());
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -364,7 +369,8 @@ public static void unZipAllThread(){
     public static void xhUnZipFileToConfigPathThread(Map<String,String> txtmap) throws IOException {
         SimpleDateFormat formatter2= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
         Date date3 = new Date(System.currentTimeMillis());
-        System.out.println("开始时间——"+formatter2.format(date3));
+        System.out.println("信号处理开始时间——"+formatter2.format(date3));
+        logger.info("信号处理开始时间——"+formatter2.format(date3));
         try {
             FileTUtils.replacTextContent(InitParam.ThreadXH,"XH","3");
         } catch (IOException e) {
@@ -376,52 +382,34 @@ public static void unZipAllThread(){
         for (int i = 0; i < xhlist.size(); i++) {
             //文件名
             String filename = xhlist.get(i).substring(xhlist.get(i).lastIndexOf("\\")+1,xhlist.get(i).length());
-            File file = new File(xhlist.get(i).toString());
-            String zipname = filename.substring(filename.lastIndexOf("."),filename.length());
-            if (zipname.indexOf(".zip")!=-1){
-                unZip(file,InitParam.SIGNAL_PATH);
-            }else if(zipname.indexOf(".ok")!=-1){
-                moveFile(file.toString(),InitParam.SIGNAL_PATH);
+            if(filename.contains(".zip") || filename.contains(".ok")) {
+                File file = new File(xhlist.get(i).toString());
+                String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
+                if (zipname.indexOf(".zip") != -1) {
+                    unZip(file, InitParam.SIGNAL_PATH);
+                }
+//                else if (zipname.indexOf(".ok") != -1) {
+//                    moveFile(file.toString(), InitParam.SIGNAL_PATH);
+//                }
+                if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
+                    //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
+                    String path = InitParam.InitDateCP_PATH.toString();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    String datatime = df.format(new Date());
+                    String filepath = path + "/" + "xinhao" + "/" + datatime;
+                    moveFile(file.toString(), filepath);
+                }
             }
         }
-        System.out.println("----------信号原文件解压完成，已解压文件个数："+xhlist.size()+"-----------");
+        System.out.println("----------信号原文件解压并备份完成，文件个数："+xhlist.size()+"-----------");
+        logger.info("***************信号原文件解压并备份完成，文件个数："+xhlist.size()+"******************");
 
-
-        System.out.println("----------正在把信号原文件复制到备份目录中-----------");
-        //设置日期格式
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        // new Date()为获取当前系统时间
-        String datatime = df.format(new Date());
-        for (int i = 0; i < xhlist.size(); i++) {
-            //原路径的类型   比如news   weibo等
-            String typename = "";
-            String filename = xhlist.get(i).substring(xhlist.get(i).lastIndexOf("\\")+1,xhlist.get(i).length());
-            if(filename.contains("XH") || filename.contains("ZQ")){
-                typename = "xinhao";
-            }
-            //目标路径 = 原路径 + 时间日期
-            String path = InitParam.InitDateCP_PATH.toString();
-            String filepath = path + "/" + typename + "/" + datatime;
-            if(xhlist.get(i).toString().indexOf(".zip")!=-1 || xhlist.get(i).toString().indexOf(".ok")!=-1){
-                moveFile(xhlist.get(i).toString(),filepath);
-            }
-        }
-        System.out.println("----------信号原文件备份完成，已备份文件个数："+xhlist.size()+"-----------");
-
-
-        System.out.println("----------信号原文件删除中-----------");
-        for (int i = 0; i < xhlist.size(); i++) {
-            if(xhlist.get(i).toString().indexOf(".zip")!=-1 || xhlist.get(i).toString().indexOf(".ok")!=-1){
-                deleteFile(xhlist.get(i).toString());
-            }
-        }
-        System.out.println("----------信号原文件删除完成，已删除文件个数："+xhlist.size()+"-----------");
 
         SignalParserJob.XinHaorun(txtmap);
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
         Date date2 = new Date(System.currentTimeMillis());
-        System.out.println("结束时间——"+formatter.format(date2));
-
+        System.out.println("信号结束时间——"+formatter.format(date2));
+        logger.info("信号结束时间——"+formatter.format(date2));
     }
 
 
@@ -438,59 +426,74 @@ public static void unZipAllThread(){
         }
         ArrayList<String> wxlist = getWeiXinInitFilePath();
         System.out.println("----------微信原文件解压中，文件个数："+wxlist.size()+"-----------");
+        SimpleDateFormat formatter2= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
+        Date date3 = new Date(System.currentTimeMillis());
+        logger.info("微信处理开始时间————"+formatter2.format(date3));
         for (int i = 0; i < wxlist.size(); i++) {
             //文件名
             String filename = wxlist.get(i).substring(wxlist.get(i).lastIndexOf("\\")+1,wxlist.get(i).length());
-            File file = new File(wxlist.get(i).toString());
-            String zipname = filename.substring(filename.lastIndexOf("."),filename.length());
-            if (filename.contains("WX") && zipname.indexOf(".zip")!=-1){
-                unZip(file,InitParam.WEIXIN_PATH);
-            }else if(filename.contains("WX") && zipname.indexOf(".ok")!=-1){
-                moveFile(file.toString(),InitParam.WEIXIN_PATH);
+            if(filename.contains(".zip") || filename.contains(".ok")) {
+                File file = new File(wxlist.get(i).toString());
+                String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
+                if (filename.contains("WX") && zipname.indexOf(".zip") != -1) {
+                    unZip(file, InitParam.WEIXIN_PATH);
+                }
+//                else if (filename.contains("WX") && zipname.indexOf(".ok") != -1) {
+//                    moveFile(file.toString(), InitParam.WEIXIN_PATH);
+//                }
+                if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
+                    //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
+                    String path = InitParam.InitDateCP_PATH.toString();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    String datatime = df.format(new Date());
+                    String filepath = path + "/" + "weixin" + "/" + datatime;
+                    moveFile(file.toString(), filepath);
+//                    deleteFile(wxlist.get(i).toString());
+                }
             }
         }
 
-        System.out.println("----------微信原文件解压完成，已解压文件个数："+wxlist.size()+"-----------");
+        System.out.println("----------微信原文件解压并备份完成，文件个数："+wxlist.size()+"-----------");
+        logger.info("***************微信原文件解压并备份完成，文件个数："+wxlist.size()+"******************");
 
-
-
-        System.out.println("----------正在把微信原文件复制到备份目录中-----------");
-        //设置日期格式
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        // new Date()为获取当前系统时间
-        String datatime = df.format(new Date());
-        for (int i = 0; i < wxlist.size(); i++) {
-            //原路径的类型   比如news   weibo等
-            String typename = "";
-            String filename = wxlist.get(i).substring(wxlist.get(i).lastIndexOf("\\")+1,wxlist.get(i).length());
-            if(filename.contains("WX")){
-                typename = "weixin";
-            }
-            //目标路径 = 原路径 + 时间日期
-            String path = InitParam.InitDateCP_PATH.toString();
-            String filepath = path + "/" + typename + "/" + datatime;
-            if(wxlist.get(i).toString().indexOf(".zip")!=-1 || wxlist.get(i).toString().indexOf(".ok")!=-1){
-                moveFile(wxlist.get(i).toString(),filepath);
-            }
-        }
-        System.out.println("----------微信原文件备份完成，已备份文件个数："+wxlist.size()+"-----------");
-
-
-
-        System.out.println("----------微信原文件删除中-----------");
-        for (int i = 0; i < wxlist.size(); i++) {
-            if(wxlist.get(i).toString().indexOf(".zip")!=-1 || wxlist.get(i).toString().indexOf(".ok")!=-1){
-                deleteFile(wxlist.get(i).toString());
-            }
-        }
-        System.out.println("----------微信原文件删除完成，已删除文件个数："+wxlist.size()+"-----------");
+//
+//        System.out.println("----------正在把微信原文件复制到备份目录中-----------");
+//        //设置日期格式
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//        // new Date()为获取当前系统时间
+//        String datatime = df.format(new Date());
+//        for (int i = 0; i < wxlist.size(); i++) {
+//            //原路径的类型   比如news   weibo等
+//            String typename = "";
+//            String filename = wxlist.get(i).substring(wxlist.get(i).lastIndexOf("\\")+1,wxlist.get(i).length());
+//            if(filename.contains("WX")){
+//                typename = "weixin";
+//            }
+//            //目标路径 = 原路径 + 时间日期
+//            String path = InitParam.InitDateCP_PATH.toString();
+//            String filepath = path + "/" + typename + "/" + datatime;
+//            if(wxlist.get(i).toString().indexOf(".zip")!=-1 || wxlist.get(i).toString().indexOf(".ok")!=-1){
+//                moveFile(wxlist.get(i).toString(),filepath);
+//            }
+//        }
+//        System.out.println("----------微信原文件备份完成，已备份文件个数："+wxlist.size()+"-----------");
+//
+//
+//
+//        System.out.println("----------微信原文件删除中-----------");
+//        for (int i = 0; i < wxlist.size(); i++) {
+//            if(wxlist.get(i).toString().indexOf(".zip")!=-1 || wxlist.get(i).toString().indexOf(".ok")!=-1){
+//                deleteFile(wxlist.get(i).toString());
+//            }
+//        }
+//        System.out.println("----------微信原文件删除完成，已删除文件个数："+wxlist.size()+"-----------");
 
 
         WeixinParserJob.WeiXinrun(txtmap);
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date2 = new Date(System.currentTimeMillis());
-        System.out.println("结束时间——"+formatter.format(date2));
-
+        System.out.println("微信处理结束，结束时间——"+formatter.format(date2));
+        logger.info("微信处理结束，结束时间——"+formatter.format(date2));
     }
 
 
@@ -507,58 +510,73 @@ public static void unZipAllThread(){
         }
         ArrayList<String> wblist = getWeiBoInitFilePath();
         System.out.println("----------微博原文件解压中，文件个数："+wblist.size()+"-----------");
+        SimpleDateFormat formatter2= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
+        Date date3 = new Date(System.currentTimeMillis());
+        logger.info("微博处理开始时间————"+formatter2.format(date3));
 
         for (int i = 0; i < wblist.size(); i++) {
             //文件名
             String filename = wblist.get(i).substring(wblist.get(i).lastIndexOf("\\")+1,wblist.get(i).length());
-            File file = new File(wblist.get(i).toString());
-            String zipname = filename.substring(filename.lastIndexOf("."),filename.length());
-            if (filename.contains("WB") && zipname.indexOf(".zip")!=-1){
-                unZip(file,InitParam.WEIBO_PATH);
-            }else if(filename.contains("WB") && zipname.indexOf(".ok")!=-1){
-                moveFile(file.toString(),InitParam.WEIBO_PATH);
+            if(filename.contains(".zip") || filename.contains(".ok")) {
+                File file = new File(wblist.get(i).toString());
+                String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
+                if (filename.contains("WB") && zipname.indexOf(".zip") != -1) {
+                    unZip(file, InitParam.WEIBO_PATH);
+                }
+//                else if (filename.contains("WB") && zipname.indexOf(".ok") != -1) {
+//                    moveFile(file.toString(), InitParam.WEIBO_PATH);
+//                }
+                if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
+                    //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
+                    String path = InitParam.InitDateCP_PATH.toString();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    String datatime = df.format(new Date());
+                    String filepath = path + "/" + "weibo" + "/" + datatime;
+                    moveFile(file.toString(), filepath);
+//                    deleteFile(wblist.get(i).toString());
+                }
             }
         }
-        System.out.println("----------微博原文件解压完成，已解压文件个数："+wblist.size()+"-----------");
-
-
-        System.out.println("----------正在把微博原文件复制到备份目录中-----------");
-        //设置日期格式
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        // new Date()为获取当前系统时间
-        String datatime = df.format(new Date());
-        for (int i = 0; i < wblist.size(); i++) {
-            //原路径的类型   比如news   weibo等
-            String typename = "";
-            String filename = wblist.get(i).substring(wblist.get(i).lastIndexOf("\\")+1,wblist.get(i).length());
-            if(filename.contains("WB")){
-                typename = "weibo";
-            }
-            //目标路径 = 原路径 + 时间日期
-            String path = InitParam.InitDateCP_PATH.toString();
-            String filepath = path + "/" + typename + "/" + datatime;
-            if(wblist.get(i).toString().indexOf(".zip")!=-1 || wblist.get(i).toString().indexOf(".ok")!=-1){
-                moveFile(wblist.get(i).toString(),filepath);
-            }
-        }
-        System.out.println("----------微博原文件备份完成，已备份文件个数："+wblist.size()+"-----------");
-
-
-        System.out.println("----------微博原文件删除中-----------");
-        for (int i = 0; i < wblist.size(); i++) {
-            if(wblist.get(i).toString().indexOf(".zip")!=-1 || wblist.get(i).toString().indexOf(".ok")!=-1){
-                deleteFile(wblist.get(i).toString());
-            }
-        }
-        System.out.println("----------微博原文件删除完成，已删除文件个数："+wblist.size()+"-----------");
+        System.out.println("----------微博原文件解压并备份完成，已解压文件个数："+wblist.size()+"-----------");
+        logger.info("----------微博原文件解压并备份完成，已解压文件个数："+wblist.size()+"-----------");
+//
+//        System.out.println("----------正在把微博原文件复制到备份目录中-----------");
+//        //设置日期格式
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//        // new Date()为获取当前系统时间
+//        String datatime = df.format(new Date());
+//        for (int i = 0; i < wblist.size(); i++) {
+//            //原路径的类型   比如news   weibo等
+//            String typename = "";
+//            String filename = wblist.get(i).substring(wblist.get(i).lastIndexOf("\\")+1,wblist.get(i).length());
+//            if(filename.contains("WB")){
+//                typename = "weibo";
+//            }
+//            //目标路径 = 原路径 + 时间日期
+//            String path = InitParam.InitDateCP_PATH.toString();
+//            String filepath = path + "/" + typename + "/" + datatime;
+//            if(wblist.get(i).toString().indexOf(".zip")!=-1 || wblist.get(i).toString().indexOf(".ok")!=-1){
+//                moveFile(wblist.get(i).toString(),filepath);
+//            }
+//        }
+//        System.out.println("----------微博原文件备份完成，已备份文件个数："+wblist.size()+"-----------");
+//
+//
+//        System.out.println("----------微博原文件删除中-----------");
+//        for (int i = 0; i < wblist.size(); i++) {
+//            if(wblist.get(i).toString().indexOf(".zip")!=-1 || wblist.get(i).toString().indexOf(".ok")!=-1){
+//                deleteFile(wblist.get(i).toString());
+//            }
+//        }
+//        System.out.println("----------微博原文件删除完成，已删除文件个数："+wblist.size()+"-----------");
 
 
         WeiboParserJob.weiBoRun(txtmap);
 
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date2 = new Date(System.currentTimeMillis());
-        System.out.println("结束时间——"+formatter.format(date2));
-
+        System.out.println("微博结束时间——"+formatter.format(date2));
+        logger.info("微博结束时间——"+formatter.format(date2));
     }
 
 
@@ -574,28 +592,33 @@ public static void unZipAllThread(){
         }
         ArrayList<String> newlist = getNewsInitFilePath();
         System.out.println("----------新闻原文件解压并备份中，文件个数："+newlist.size()+"-----------");
+        logger.info("----------新闻原文件解压并备份中，文件个数："+newlist.size()+"-----------");
         for (int i = 0; i < newlist.size(); i++) {
             //文件名
             String filename = newlist.get(i).substring(newlist.get(i).lastIndexOf("\\")+1,newlist.get(i).length());
-            File file = new File(newlist.get(i).toString());
-            String zipname = filename.substring(filename.lastIndexOf("."),filename.length());
-            if (filename.contains("NEWS") && zipname.indexOf(".zip")!=-1){
-                unZip(file,InitParam.NEWS_PATH);
-            }else if(filename.contains("NEWS") && zipname.indexOf(".ok")!=-1){
-                moveFile(file.toString(),InitParam.NEWS_PATH);
-            }
-            if(zipname.indexOf(".zip")!=-1 || zipname.indexOf(".ok")!=-1){
-                //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
-                String path = InitParam.InitDateCP_PATH.toString();
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                String datatime = df.format(new Date());
-                String filepath = path + "/" + "news" + "/" + datatime;
-                moveFile(file.toString(),filepath);
-                deleteFile(newlist.get(i).toString());
+            if(filename.contains(".zip") || filename.contains(".ok")) {
+                File file = new File(newlist.get(i).toString());
+                String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
+                if (filename.contains("NEWS") && zipname.indexOf(".zip") != -1) {
+                    unZip(file, InitParam.NEWS_PATH);
+                }
+//                else if (filename.contains("NEWS") && zipname.indexOf(".ok") != -1) {
+//                    //复制过去
+//                    moveFile(file.toString(), InitParam.NEWS_PATH);
+//                }
+                if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
+                    //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
+                    String path = InitParam.InitDateCP_PATH.toString();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    String datatime = df.format(new Date());
+                    String filepath = path + "/" + "news" + "/" + datatime;
+                    moveFile(file.toString(), filepath);
+//                    deleteFile(newlist.get(i).toString());
+                }
             }
         }
         System.out.println("----------新闻原文件解压备份完成，已解压并备份文件个数："+newlist.size()+"-----------");
-
+        logger.info("----------新闻原文件解压备份完成，已解压并备份文件个数："+newlist.size()+"-----------");
 
 
 
@@ -636,8 +659,8 @@ public static void unZipAllThread(){
         NewsParserJob.newRun(txtmap);
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date2 = new Date(System.currentTimeMillis());
-        System.out.println("结束时间——"+formatter.format(date2));
-
+        System.out.println("新闻结束时间——"+formatter.format(date2));
+        logger.info("新闻结束时间——"+formatter.format(date2));
     }
 
     /**
@@ -737,6 +760,7 @@ public static void unZipAllThread(){
 
         } catch (Exception e) {
             String filename = srcFile.getName();
+            logger.info("***************"+e+"******************");
             logger.info("**********************该压缩文件有问题，文件名————>>>"+filename+"**********************");
 //            throw new RuntimeException("unzip error from ZipUtils", e);
         } finally {
@@ -748,7 +772,7 @@ public static void unZipAllThread(){
                     zipFile.close();
 
                 } catch (IOException e) {
-
+                    logger.info("***************"+e+"******************");
                     e.printStackTrace();
 
                 }
@@ -925,7 +949,7 @@ public static void unZipAllThread(){
     public static ArrayList getNewsInitFilePath(){
         ArrayList<String> newsresult = new ArrayList<String>();
         String newsPath = InitParam.InitDate_NEWS_PATH;
-        newsresult = getFile(newsPath);
+        newsresult = getFileMAX(newsPath);
         return newsresult;
     }
 
@@ -935,7 +959,7 @@ public static void unZipAllThread(){
         ArrayList<String> weiboresult = new ArrayList<String>();
         String weiboPath = InitParam.InitDate_WEIBO_PATH;
 
-        weiboresult = getFile(weiboPath);
+        weiboresult = getFileMAX(weiboPath);
 
         return weiboresult;
     }
@@ -945,7 +969,7 @@ public static void unZipAllThread(){
     public static ArrayList getWeiXinInitFilePath(){
         ArrayList<String> weixinresult = new ArrayList<String>();
         String weixinPath = InitParam.InitDate_WEIXIN_PATH;
-        weixinresult = getFile(weixinPath);
+        weixinresult = getFileMAX(weixinPath);
 
         return weixinresult;
     }
@@ -956,7 +980,7 @@ public static void unZipAllThread(){
     public static ArrayList getXinHaoInitFilePath(){
         ArrayList<String> xinhaoresult = new ArrayList<String>();
         String xinhaoPath = InitParam.InitDate_XINHAO_PATH;
-        xinhaoresult = getFile(xinhaoPath);
+        xinhaoresult = getFileMAX(xinhaoPath);
         return xinhaoresult;
     }
 
@@ -1007,6 +1031,27 @@ public static ArrayList getInitFileCPPath() {
         }
         return list;
     }
+
+    //只获取当前目录下的所有文件名
+    public static ArrayList getFileMAX(String file){
+        File zipFile = new File(file);
+        ArrayList list = new ArrayList();
+        if(file != null){
+            File[] f = zipFile.listFiles();
+            if(f != null){
+                int flength = f.length;
+                int max_file = Integer.parseInt(InitParam.MAX_FILE);
+                if(flength >= max_file){
+                    flength = max_file;
+                }
+                for(int i=0;i<flength;i++){
+                    list.add(f[i].toString());
+                }
+            }
+        }
+        return list;
+    }
+
 /*
 *       删除该目录下所有的文件，只删除文件不删除文件夹
 *

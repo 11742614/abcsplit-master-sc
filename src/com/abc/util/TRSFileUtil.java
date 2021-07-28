@@ -330,7 +330,7 @@ public class TRSFileUtil {
                 filtermap = getTxtMap(file);
             }
             //返回格式为：内容1;内容2;内容3
-            if( strname.equals("trsCust") ||  strname.equals("trsMacrorisk")) {
+            if(strname.equals("trsCust")) {
                 String[] content = strContent.split(";");
                 String retrunStr = "";
                 for (int i = 0; i < content.length; i++) {
@@ -340,6 +340,18 @@ public class TRSFileUtil {
                     retrunStr += content[i]+";";
                 }
                     retrunStr = retrunStr.substring(0,retrunStr.lastIndexOf(";"));
+                return retrunStr;
+
+            }else if(strname.equals("trsMacrorisk")) {
+                String[] content = strContent.split(";");
+                String retrunStr = "";
+                for (int i = 0; i < content.length; i++) {
+                    if(filtermap.containsKey(content[i])){
+                        content[i] = filtermap.get(content[i]);
+                    }
+                    retrunStr += content[i]+";";
+                }
+                retrunStr = retrunStr.substring(0,retrunStr.lastIndexOf(";"));
                 return retrunStr;
 
             }else if(strname.equals("trsArea")) {
@@ -660,7 +672,7 @@ public class TRSFileUtil {
         Map<String,String> filtermap = new HashMap<String,String>();
         try {
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(filepath)));
-            BufferedReader in = new BufferedReader(new InputStreamReader(bis, "GBK"), 10 * 1024 * 1024);// 10M缓存
+            BufferedReader in = new BufferedReader(new InputStreamReader(bis, "UTF-8"), 10 * 1024 * 1024);// 10M缓存
             while (in.ready()) {
                 String line = in.readLine();
                 if (!StringUtils.isBlank(line)) {

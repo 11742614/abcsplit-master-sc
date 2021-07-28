@@ -13,6 +13,7 @@ public class EnterpriseNameJob  extends TimerTask {
     @Override
     public void run() {
         try {
+            logger.info("***************企业名单每日更新开始******************");
             EnterpriseNameUtil.initMakeCustFile();
             String txtfilepath = InitParam.CUST_PATH+"\\"+"custname.txt";
             try {
@@ -20,9 +21,11 @@ public class EnterpriseNameJob  extends TimerTask {
                 TRSFileUtil.getBigTxtMap(txtfilepath);
                 logger.info("***************企业名单文件读取完成******************");
             } catch (IOException e) {
+                logger.info("***************"+e+"******************");
                 e.printStackTrace();
             }
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
     }

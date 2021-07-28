@@ -1,6 +1,8 @@
 package com.abc.util;
+import com.abc.EnterpriseNameJob;
 import com.abc.InitParam;
 import org.apache.axis.utils.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -15,7 +17,7 @@ import java.util.zip.GZIPInputStream;
  * 读取的是|!分隔的文件
  */
 public class EnterpriseNameUtil {
-
+    private static final Logger logger = Logger.getLogger(EnterpriseNameUtil.class);
     public static void main(String[] args) throws IOException {
 
 
@@ -27,9 +29,30 @@ public class EnterpriseNameUtil {
         ArrayList<String> list = ZipUtil.getFile(InitParam.CUST_MODE_PATH);
 
         if(list.size()>0) {
-            doUncompressFile(list.get(0).toString());
+
+            for (int i = 0; i < list.size(); i++) {
+                File tempFile =new File( list.get(i).trim());
+                String fileName = tempFile.getName();
+
+                //nas上的路径
+                File CUST_MODE_PATH = new File(InitParam.CUST_MODE_PATH+"/"+fileName);
+                //本地路径
+                File LOCAL_CUST_MODE_PATH = new File(InitParam.LOCAL_CUST_MODE_PATH+"/"+fileName);
+                //从nas复制到本地
+                ZipUtil.copyFileUsingFileChannels(CUST_MODE_PATH,LOCAL_CUST_MODE_PATH);
+            }
+
+            ArrayList<String> locallist = ZipUtil.getFile(InitParam.LOCAL_CUST_MODE_PATH);
+            String gzfile = "";
+            for (int i = 0; i < locallist.size(); i++) {
+                if(locallist.get(i).contains("gz") && !locallist.get(i).contains("ctl")){
+                    gzfile = locallist.get(i).toString();
+                    break;
+                }
+            }
+            doUncompressFile(gzfile);
         //解压后再读一遍
-        list = ZipUtil.getFile(InitParam.CUST_MODE_PATH);
+        list = ZipUtil.getFile(InitParam.LOCAL_CUST_MODE_PATH);
         //设置日期格式
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         // new Date()为获取当前系统时间
@@ -58,14 +81,28 @@ public class EnterpriseNameUtil {
                 ZipUtil.copyFileUsingFileChannels(nowfile,endfile);
             }else {
                 //txt文件生成的位置
-                String txtfile = InitParam.CUST_PATH + "\\" + "custname.txt";
+                String txtfile = InitParam.LOCAL_CUST_MODE_PATH + "\\" + "custname.txt";
                 //过滤文件的位置
-                String guolvFile = InitParam.CUST_PATH + "\\" + "custfilter_名单过滤词.txt";
+                String guolvFile = InitParam.LOCAL_CUST_FILTER_PATH + "\\" + "custfilter_名单过滤词.txt";
                 makeEnterpriseNameFile(list.get(i).toString(),txtfile,guolvFile);
+                //nas上的路径
+                File CUST_MODE_PATH = new File(InitParam.CUST_PATH+"/"+ "custname.txt");
+                //从nas复制到本地
+                File tFile = new File(txtfile);
+                ZipUtil.copyFileUsingFileChannels(tFile,CUST_MODE_PATH);
+                logger.info("***************企业名单已复制到nas******************");
+                ZipUtil.deleteFile(txtfile);
+                logger.info("***************本地企业名单txt已删除******************");
+                System.out.println("-------------企业名单已复制到nas,本地企业名单txt已删除----------------------");
             }
-            ZipUtil.deleteFile(list.get(i).toString());
+                ZipUtil.deleteFile(list.get(i).toString());
         }
+            list = ZipUtil.getFile(InitParam.CUST_MODE_PATH);
+            for (int i = 0; i < list.size(); i++) {
+                ZipUtil.deleteFile(list.get(i).toString());
+            }
             System.out.println("-------------企业名单已更新----------------------");
+            logger.info("***************企业名单已更新******************");
         }
 
     }
@@ -115,14 +152,20 @@ public class EnterpriseNameUtil {
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     System.out.println("file read error!");
+                    logger.info("***************file read error!******************");
+                    logger.info("***************"+e+"******************");
                     e.printStackTrace();
                 }
             } catch (UnsupportedEncodingException e) {
                 // TODO Auto-generated catch block
+                logger.info("***************file catch unsupported encoding!******************");
+                logger.info("***************"+e+"******************");
                 System.out.println("file catch unsupported encoding!");
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
+                logger.info("***************file not found!******************");
+                logger.info("***************"+e+"******************");
                 System.out.println("file not found!");
                 e.printStackTrace();
             }
@@ -147,22 +190,23 @@ public class EnterpriseNameUtil {
     public static String makeEnterpriseNameFile(String enterpriseNameFilePath,String filepath,String filterPath) throws IOException {
         HashMap<String,String> hashMap = fileContent(enterpriseNameFilePath,filterPath);
         clearInfoForFile(filepath);
+        StringBuffer stringBuffer = new StringBuffer();
         for (Entry<String, String> entry : hashMap.entrySet()) {
-            String enContent = entry.getKey()+"\t"+entry.getValue()+"\r\n";
-            try {
-
-                FileWriter fw = null;
-                fw = new FileWriter(filepath,true);
-                fw.write(enContent);
-                fw.close();
-
-
-            } catch (IOException e) {
-                return "生成文件失败";
-            }
+            stringBuffer.append(entry.getKey()+"\t"+entry.getValue()+"\r\n");
         }
-
+        try {
+            FileWriter fw = null;
+            fw = new FileWriter(filepath,true);
+            fw.write(stringBuffer.toString());
+            fw.close();
+        } catch (IOException e) {
+            logger.info("***************企业名单生成失败******************");
+            logger.info("***************"+e+"******************");
+            return "生成文件失败";
+        }
+        logger.info("***************企业名单生成成功******************");
         return "生成文件成功";
+
     }
 
     // 清空已有的文件内容，以便下次重新写入新的内容
@@ -177,6 +221,7 @@ public class EnterpriseNameUtil {
             fileWriter.flush();
             fileWriter.close();
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
         }
     }
@@ -253,6 +298,7 @@ public class EnterpriseNameUtil {
             out.close();
 
         } catch (IOException e) {
+            logger.info("***************"+e+"******************");
             e.printStackTrace();
             System.exit(1);
         }

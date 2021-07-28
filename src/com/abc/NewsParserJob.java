@@ -23,7 +23,6 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import static com.abc.util.ZipUtil.unZipFileToConfigPath;
 
 public class NewsParserJob extends TimerTask {
   private static final Logger logger = Logger.getLogger(NewsParserJob.class);
@@ -67,6 +66,7 @@ public class NewsParserJob extends TimerTask {
           okfile.delete();
         }
       } catch (IOException e) {
+        logger.info("***************"+e+"******************");
         e.printStackTrace();
       }
     }
