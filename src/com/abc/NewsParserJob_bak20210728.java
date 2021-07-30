@@ -5,6 +5,13 @@
 
 package com.abc;
 
+import com.abc.util.EnterpriseNameUtil;
+import com.abc.util.TRSFileUtil;
+import com.abc.util.ZipUtil;
+import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -15,22 +22,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.abc.util.EnterpriseNameUtil;
-import com.abc.util.TRSFileUtil;
-import com.abc.util.ZipUtil;
-import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 
-public class NewsParserJob extends TimerTask {
-  private static final Logger logger = Logger.getLogger(NewsParserJob.class);
+public class NewsParserJob_bak20210728 extends TimerTask {
+  private static final Logger logger = Logger.getLogger(NewsParserJob_bak20210728.class);
   private File[] oklist = null;
   public static ConcurrentMap<String, String> custMaps = new ConcurrentHashMap();
-  public NewsParserJob() {
+  public NewsParserJob_bak20210728() {
   }
 
   public void run() {
@@ -56,7 +54,7 @@ public class NewsParserJob extends TimerTask {
 
   public static void newRun(Map<String,String> txtmap) {
     logger.info("新闻论坛数据拆分任务开始-");
-    NewsParserJob newsParserJob = new NewsParserJob();
+    NewsParserJob_bak20210728 newsParserJob = new NewsParserJob_bak20210728();
     newsParserJob.readfilelist();
     File[] var4 = newsParserJob.oklist;
     int var3 = newsParserJob.oklist.length;
@@ -72,7 +70,7 @@ public class NewsParserJob extends TimerTask {
         e.printStackTrace();
       }
     }
-    String newsFile = InitParam.LOCAL_NEWS_PATH+"/";
+    String newsFile = InitParam.NEWS_PATH+"/";
     ZipUtil.delAllFile(newsFile);
     logger.info("新闻论坛数据拆分任务结束");
 
@@ -175,7 +173,7 @@ public class NewsParserJob extends TimerTask {
   private boolean readtrsfile(File okfile,Map<String,String> txtmap) throws IOException {
     String dateStr = DateUtils.dateFormat(new Date(), "yyyyMMdd");
     String filename = okfile.getName().replace(".ok", ".trs");
-    File trsfile = new File(InitParam.LOCAL_NEWS_PATH + "/" + filename);
+    File trsfile = new File(InitParam.NEWS_PATH + "/" + filename);
     if (!trsfile.exists()) {
       return false;
     } else {
@@ -267,25 +265,23 @@ public class NewsParserJob extends TimerTask {
               }
             }
 
-            Map<String, Object> map = (Map) var23.next();
+            Map<String, Object> map = (Map)var23.next();
             //新增
-            datamap = this.processTRSData(map, txtmap);
-
-            for (Object key : datamap.keySet()) {
+            datamap = this.processTRSData(map,txtmap);
+            for(Object key:datamap.keySet()){
               String keyy = key.toString();
               String value = datamap.get(keyy).toString();
-              if (!StringUtils.isNotBlank(value) || value.equals("null")) {
+              if(!StringUtils.isNotBlank(value) || value.equals("null")){
                 value = "";
               }
-              datamap.put(key, value);
+              datamap.put(key,value);
             }
 //            datamap = this.parserData(map);
-          } while (datamap == null);
-          if(datamap.size() != 0){
+          } while(datamap == null);
           //--1.5分析表----------
           List<Map<String, String>> splits = this.splitData(datamap);
 
-          if (splits.size() == 0) {
+          if(splits.size()==0) {
 //            String APC_SARSLTYPE = splits.get(i).get("APC_SARSLTYPE");
             Map tempmap = new HashMap();
             datamap = tempmap;
@@ -297,21 +293,21 @@ public class NewsParserJob extends TimerTask {
           int var29 = InitParam.NEWS_FILEDSES.length;
 
           int n;
-          for (n = 0; n < var29; ++n) {
+          for(n = 0; n < var29; ++n) {
             String param = var30[n];
             if (i > 0) {
               line = line + InitParam.SPLIT_SM;
             }
 
-            if (StringUtils.isBlank((String) datamap.get(param))) {
+            if (StringUtils.isBlank((String)datamap.get(param))) {
               line = line;
             } else {
-              line = line + (String) datamap.get(param);
+              line = line + (String)datamap.get(param);
             }
 
             ++i;
           }
-          if (splits.size() != 0) {
+          if(splits.size()!=0) {
             this.write(newswriter, line);
           }
           //--------1.1-1.3原始表结束---------
@@ -327,14 +323,14 @@ public class NewsParserJob extends TimerTask {
           String[] var33 = InitParam.UNION_FILEDSES;
           int var32 = InitParam.UNION_FILEDSES.length;
 
-          for (int var31 = 0; var31 < var32; ++var31) {
+          for(int var31 = 0; var31 < var32; ++var31) {
             String param = var33[var31];
             if (n > 0) {
               line_ = line_ + InitParam.SPLIT_SM;
             }
-            String datatemp = (String) dataMaps.get(param);
+            String datatemp = (String)dataMaps.get(param);
             if (StringUtils.isNotBlank(datatemp)) {
-              line_ = line_ + (String) dataMaps.get(param);
+              line_ = line_ + (String)dataMaps.get(param);
             } else {
               line_ = line_;
             }
@@ -348,27 +344,27 @@ public class NewsParserJob extends TimerTask {
 
 //--1.5分析表----------
           Iterator var46 = splits.iterator();
-          while (true) {
+          while(true) {
             Map map2;
             do {
               if (!var46.hasNext()) {
                 continue label124;
               }
 
-              map2 = (Map) var46.next();
-            } while (map2 == null);
+              map2 = (Map)var46.next();
+            } while(map2 == null);
 
             String slitLine = "";
 
-            for (int j = 0; j < InitParam.SPLIT_FILEDSES.length; ++j) {
+            for(int j = 0; j < InitParam.SPLIT_FILEDSES.length; ++j) {
               if (j > 0) {
                 slitLine = slitLine + InitParam.SPLIT_SM;
               }
 
-              if (StringUtils.isBlank((String) map2.get(InitParam.SPLIT_FILEDSES[j]))) {
+              if (StringUtils.isBlank((String)map2.get(InitParam.SPLIT_FILEDSES[j]))) {
                 slitLine = slitLine;
               } else {
-                slitLine = slitLine + (String) map2.get(InitParam.SPLIT_FILEDSES[j]);
+                slitLine = slitLine + (String)map2.get(InitParam.SPLIT_FILEDSES[j]);
               }
             }
 
@@ -376,7 +372,7 @@ public class NewsParserJob extends TimerTask {
           }
           //--1.5分析表结束----------
 
-        }
+
 
         }
       } else {
@@ -622,11 +618,7 @@ public class NewsParserJob extends TimerTask {
 
     strtemp = (String)map.get("trsAbstract");
     if (StringUtils.isBlank(strtemp)) {
-      strtemp = (String)map.get("irabstract");
-      if(StringUtils.isBlank(strtemp)){
-          Map<String, String> datamapnull = new HashMap();
-          return datamapnull;
-      }
+      strtemp = "";
     }
     datamap.put("IRN_abstract",strtemp);
 
@@ -1311,7 +1303,7 @@ public class NewsParserJob extends TimerTask {
     }
 
     this.createblank(one, two, three);
-    File newspath = new File(InitParam.LOCAL_NEWS_PATH);
+    File newspath = new File(InitParam.NEWS_PATH);
     this.oklist = newspath.listFiles(new FileFilter() {
       public boolean accept(File pathname) {
 //        System.out.println("---->>>"+pathname.getName());

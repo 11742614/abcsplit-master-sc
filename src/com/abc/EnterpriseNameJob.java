@@ -6,6 +6,8 @@ import com.abc.util.ZipUtil;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimerTask;
 
 public class EnterpriseNameJob  extends TimerTask {
@@ -13,7 +15,9 @@ public class EnterpriseNameJob  extends TimerTask {
     @Override
     public void run() {
         try {
-            logger.info("***************企业名单每日更新开始******************");
+            SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+            Date date2 = new Date(System.currentTimeMillis());
+            logger.info("***************企业名单每日更新开始，时间：---"+formatter.format(date2)+"******************");
             EnterpriseNameUtil.initMakeCustFile();
             String txtfilepath = InitParam.CUST_PATH+"\\"+"custname.txt";
             try {

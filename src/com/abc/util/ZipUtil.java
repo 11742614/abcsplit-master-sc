@@ -377,20 +377,37 @@ public static void unZipAllThread(){
             e.printStackTrace();
         }
         ArrayList<String> xhlist = getXinHaoInitFilePath();
-        System.out.println("----------信号原文件解压中，文件个数："+xhlist.size()+"-----------");
-
+        System.out.println("----------信号原文件复制到本地中，文件个数："+xhlist.size()+"-----------");
+        logger.info("----------信号原文件复制到本地中，文件个数："+xhlist.size()+"-----------");
         for (int i = 0; i < xhlist.size(); i++) {
+            if(xhlist.get(i).toString().contains(".zip") || xhlist.get(i).toString().contains(".ok")) {
+                String naspath = xhlist.get(i).toString();
+                String localpath = InitParam.LOCAL_InitDate_XINHAO_PATH;
+                File nasfile = new File(naspath);
+                File localfile = new File(localpath + "/" + nasfile.getName());
+                copyFileUsingFileChannels(nasfile, localfile);
+            }
+        }
+        System.out.println("----------信号原文件复制到本地结束，文件个数："+xhlist.size()+"-----------");
+        logger.info("----------信号原文件复制到本地结束，文件个数："+xhlist.size()+"-----------");
+
+        ArrayList<String> localxhlist = getLocalXinHaoInitFilePath();
+        System.out.println("----------信号原文件解压中，文件个数："+localxhlist.size()+"-----------");
+
+
+        for (int i = 0; i < localxhlist.size(); i++) {
             //文件名
-            String filename = xhlist.get(i).substring(xhlist.get(i).lastIndexOf("\\")+1,xhlist.get(i).length());
+            String filename = localxhlist.get(i).substring(localxhlist.get(i).lastIndexOf("\\")+1,localxhlist.get(i).length());
             if(filename.contains(".zip") || filename.contains(".ok")) {
-                File file = new File(xhlist.get(i).toString());
+                File file = new File(localxhlist.get(i).toString());
                 String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
                 if (zipname.indexOf(".zip") != -1) {
-                    unZip(file, InitParam.SIGNAL_PATH);
-                }
-//                else if (zipname.indexOf(".ok") != -1) {
+                    unZip(file, InitParam.LOCAL_XINHAO_PATH);
+                }else if (zipname.indexOf(".ok") != -1) {
 //                    moveFile(file.toString(), InitParam.SIGNAL_PATH);
-//                }
+                    File path = new File(InitParam.LOCAL_XINHAO_PATH+"/"+file.getName());
+                    copyFileUsingFileChannels(file,path);
+                }
                 if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
                     //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
                     String path = InitParam.InitDateCP_PATH.toString();
@@ -401,11 +418,20 @@ public static void unZipAllThread(){
                 }
             }
         }
-        System.out.println("----------信号原文件解压并备份完成，文件个数："+xhlist.size()+"-----------");
-        logger.info("***************信号原文件解压并备份完成，文件个数："+xhlist.size()+"******************");
+        System.out.println("----------信号原文件解压并备份完成，文件个数："+localxhlist.size()+"-----------");
+        logger.info("***************信号原文件解压并备份完成，文件个数："+localxhlist.size()+"******************");
 
 
         SignalParserJob.XinHaorun(txtmap);
+
+        System.out.println("--------------开始删除nas目录的微信原文件--------------");
+        logger.info("---------------开始删除nas目录的微信原文件--------------");
+        for (int i = 0; i < xhlist.size(); i++) {
+            deleteFile(xhlist.get(i).toString());
+        }
+        System.out.println("--------------删除nas目录的微信原文件结束--------------");
+        logger.info("---------------删除nas目录的微信原文件结束--------------");
+
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
         Date date2 = new Date(System.currentTimeMillis());
         System.out.println("信号结束时间——"+formatter.format(date2));
@@ -425,22 +451,40 @@ public static void unZipAllThread(){
             e.printStackTrace();
         }
         ArrayList<String> wxlist = getWeiXinInitFilePath();
-        System.out.println("----------微信原文件解压中，文件个数："+wxlist.size()+"-----------");
+        System.out.println("----------微信原文件复制到本地中，文件个数："+wxlist.size()+"-----------");
+        logger.info("----------微信原文件复制到本地中，文件个数："+wxlist.size()+"-----------");
+        for (int i = 0; i < wxlist.size(); i++) {
+            if(wxlist.get(i).toString().contains(".zip") || wxlist.get(i).toString().contains(".ok")) {
+                String naspath = wxlist.get(i).toString();
+                String localpath = InitParam.LOCAL_InitDate_WEIXIN_PATH;
+                File nasfile = new File(naspath);
+                File localfile = new File(localpath + "/" + nasfile.getName());
+                copyFileUsingFileChannels(nasfile, localfile);
+            }
+        }
+        System.out.println("----------微信原文件复制到本地结束，文件个数："+wxlist.size()+"-----------");
+        logger.info("----------微信原文件复制到本地结束，文件个数："+wxlist.size()+"-----------");
+
+        ArrayList<String> localwxlist = getLocalWeiXinInitFilePath();
+        System.out.println("----------微信原文件解压中，文件个数："+localwxlist.size()+"-----------");
+        logger.info("----------微信原文件解压中，文件个数："+localwxlist.size()+"-----------");
         SimpleDateFormat formatter2= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
         Date date3 = new Date(System.currentTimeMillis());
         logger.info("微信处理开始时间————"+formatter2.format(date3));
-        for (int i = 0; i < wxlist.size(); i++) {
+
+        for (int i = 0; i < localwxlist.size(); i++) {
             //文件名
-            String filename = wxlist.get(i).substring(wxlist.get(i).lastIndexOf("\\")+1,wxlist.get(i).length());
+            String filename = localwxlist.get(i).substring(localwxlist.get(i).lastIndexOf("\\")+1,localwxlist.get(i).length());
             if(filename.contains(".zip") || filename.contains(".ok")) {
-                File file = new File(wxlist.get(i).toString());
+                File file = new File(localwxlist.get(i).toString());
                 String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
                 if (filename.contains("WX") && zipname.indexOf(".zip") != -1) {
-                    unZip(file, InitParam.WEIXIN_PATH);
-                }
-//                else if (filename.contains("WX") && zipname.indexOf(".ok") != -1) {
+                    unZip(file, InitParam.LOCAL_WEIXIN_PATH);
+                } else if (filename.contains("WX") && zipname.indexOf(".ok") != -1) {
 //                    moveFile(file.toString(), InitParam.WEIXIN_PATH);
-//                }
+                    File path = new File(InitParam.LOCAL_WEIXIN_PATH+"/"+file.getName());
+                    copyFileUsingFileChannels(file,path);
+                }
                 if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
                     //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
                     String path = InitParam.InitDateCP_PATH.toString();
@@ -453,8 +497,8 @@ public static void unZipAllThread(){
             }
         }
 
-        System.out.println("----------微信原文件解压并备份完成，文件个数："+wxlist.size()+"-----------");
-        logger.info("***************微信原文件解压并备份完成，文件个数："+wxlist.size()+"******************");
+        System.out.println("----------微信原文件解压并备份完成，文件个数："+localwxlist.size()+"-----------");
+        logger.info("***************微信原文件解压并备份完成，文件个数："+localwxlist.size()+"******************");
 
 //
 //        System.out.println("----------正在把微信原文件复制到备份目录中-----------");
@@ -490,6 +534,13 @@ public static void unZipAllThread(){
 
 
         WeixinParserJob.WeiXinrun(txtmap);
+        System.out.println("--------------开始删除nas目录的微信原文件--------------");
+        logger.info("---------------开始删除nas目录的微信原文件--------------");
+        for (int i = 0; i < wxlist.size(); i++) {
+            deleteFile(wxlist.get(i).toString());
+        }
+        System.out.println("--------------删除nas目录的微信原文件结束--------------");
+        logger.info("---------------删除nas目录的微信原文件结束--------------");
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date2 = new Date(System.currentTimeMillis());
         System.out.println("微信处理结束，结束时间——"+formatter.format(date2));
@@ -509,23 +560,40 @@ public static void unZipAllThread(){
             e.printStackTrace();
         }
         ArrayList<String> wblist = getWeiBoInitFilePath();
-        System.out.println("----------微博原文件解压中，文件个数："+wblist.size()+"-----------");
+        System.out.println("----------微博原文件复制到本地中，文件个数："+wblist.size()+"-----------");
+        logger.info("----------微博原文件复制到本地中，文件个数："+wblist.size()+"-----------");
+        for (int i = 0; i < wblist.size(); i++) {
+            if(wblist.get(i).toString().contains(".zip") || wblist.get(i).toString().contains(".ok")) {
+                String naspath = wblist.get(i).toString();
+                String localpath = InitParam.LOCAL_InitDate_WEIBO_PATH;
+                File nasfile = new File(naspath);
+                File localfile = new File(localpath + "/" + nasfile.getName());
+                copyFileUsingFileChannels(nasfile, localfile);
+            }
+        }
+        System.out.println("----------微博原文件复制到本地结束，文件个数："+wblist.size()+"-----------");
+        logger.info("----------微博原文件复制到本地结束，文件个数："+wblist.size()+"-----------");
+
+        ArrayList<String> localwblist = getLocalWeiBoInitFilePath();
+        System.out.println("----------微博原文件解压中，文件个数："+localwblist.size()+"-----------");
+        logger.info("----------微博原文件解压中，文件个数："+localwblist.size()+"-----------");
         SimpleDateFormat formatter2= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
         Date date3 = new Date(System.currentTimeMillis());
         logger.info("微博处理开始时间————"+formatter2.format(date3));
 
-        for (int i = 0; i < wblist.size(); i++) {
+        for (int i = 0; i < localwblist.size(); i++) {
             //文件名
-            String filename = wblist.get(i).substring(wblist.get(i).lastIndexOf("\\")+1,wblist.get(i).length());
+            String filename = localwblist.get(i).substring(localwblist.get(i).lastIndexOf("\\")+1,localwblist.get(i).length());
             if(filename.contains(".zip") || filename.contains(".ok")) {
-                File file = new File(wblist.get(i).toString());
+                File file = new File(localwblist.get(i).toString());
                 String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
                 if (filename.contains("WB") && zipname.indexOf(".zip") != -1) {
-                    unZip(file, InitParam.WEIBO_PATH);
-                }
-//                else if (filename.contains("WB") && zipname.indexOf(".ok") != -1) {
+                    unZip(file, InitParam.LOCAL_WEIBO_PATH);
+                } else if (filename.contains("WB") && zipname.indexOf(".ok") != -1) {
 //                    moveFile(file.toString(), InitParam.WEIBO_PATH);
-//                }
+                    File path = new File(InitParam.LOCAL_WEIBO_PATH+"/"+file.getName());
+                    copyFileUsingFileChannels(file,path);
+                }
                 if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
                     //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
                     String path = InitParam.InitDateCP_PATH.toString();
@@ -537,8 +605,8 @@ public static void unZipAllThread(){
                 }
             }
         }
-        System.out.println("----------微博原文件解压并备份完成，已解压文件个数："+wblist.size()+"-----------");
-        logger.info("----------微博原文件解压并备份完成，已解压文件个数："+wblist.size()+"-----------");
+        System.out.println("----------微博原文件解压并备份完成，已解压文件个数："+localwblist.size()+"-----------");
+        logger.info("----------微博原文件解压并备份完成，已解压文件个数："+localwblist.size()+"-----------");
 //
 //        System.out.println("----------正在把微博原文件复制到备份目录中-----------");
 //        //设置日期格式
@@ -572,7 +640,13 @@ public static void unZipAllThread(){
 
 
         WeiboParserJob.weiBoRun(txtmap);
-
+        System.out.println("--------------开始删除nas目录的微博原文件--------------");
+        logger.info("---------------开始删除nas目录的微博原文件--------------");
+        for (int i = 0; i < wblist.size(); i++) {
+            deleteFile(wblist.get(i).toString());
+        }
+        System.out.println("--------------删除nas目录的微博原文件结束--------------");
+        logger.info("---------------删除nas目录的微博原文件结束--------------");
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date2 = new Date(System.currentTimeMillis());
         System.out.println("微博结束时间——"+formatter.format(date2));
@@ -591,21 +665,37 @@ public static void unZipAllThread(){
             e.printStackTrace();
         }
         ArrayList<String> newlist = getNewsInitFilePath();
-        System.out.println("----------新闻原文件解压并备份中，文件个数："+newlist.size()+"-----------");
-        logger.info("----------新闻原文件解压并备份中，文件个数："+newlist.size()+"-----------");
+        System.out.println("----------新闻原文件复制到本地中，文件个数："+newlist.size()+"-----------");
+        logger.info("----------新闻原文件复制到本地中，文件个数："+newlist.size()+"-----------");
         for (int i = 0; i < newlist.size(); i++) {
+            if(newlist.get(i).toString().contains(".zip") || newlist.get(i).toString().contains(".ok")) {
+                String naspath = newlist.get(i).toString();
+                String localpath = InitParam.LOCAL_InitDate_NEWS_PATH;
+                File nasfile = new File(naspath);
+                File localfile = new File(localpath + "/" + nasfile.getName());
+                copyFileUsingFileChannels(nasfile, localfile);
+            }
+        }
+        System.out.println("----------新闻原文件复制到本地结束，文件个数："+newlist.size()+"-----------");
+        logger.info("----------新闻原文件复制到本地结束，文件个数："+newlist.size()+"-----------");
+
+        ArrayList<String> localnewlist = getLocalNewsInitFilePath();
+        System.out.println("----------新闻原文件解压并备份中，文件个数："+localnewlist.size()+"-----------");
+        logger.info("----------新闻原文件解压并备份中，文件个数："+localnewlist.size()+"-----------");
+        for (int i = 0; i < localnewlist.size(); i++) {
             //文件名
-            String filename = newlist.get(i).substring(newlist.get(i).lastIndexOf("\\")+1,newlist.get(i).length());
+            String filename = localnewlist.get(i).substring(localnewlist.get(i).lastIndexOf("\\")+1,localnewlist.get(i).length());
             if(filename.contains(".zip") || filename.contains(".ok")) {
-                File file = new File(newlist.get(i).toString());
+                File file = new File(localnewlist.get(i).toString());
                 String zipname = filename.substring(filename.lastIndexOf("."), filename.length());
                 if (filename.contains("NEWS") && zipname.indexOf(".zip") != -1) {
-                    unZip(file, InitParam.NEWS_PATH);
-                }
-//                else if (filename.contains("NEWS") && zipname.indexOf(".ok") != -1) {
-//                    //复制过去
+                    unZip(file, InitParam.LOCAL_NEWS_PATH);
+                }else if (filename.contains("NEWS") && zipname.indexOf(".ok") != -1) {
+                    //复制过去
 //                    moveFile(file.toString(), InitParam.NEWS_PATH);
-//                }
+                    File newpath = new File(InitParam.LOCAL_NEWS_PATH+"/"+file.getName());
+                    copyFileUsingFileChannels(file,newpath);
+                }
                 if (zipname.indexOf(".zip") != -1 || zipname.indexOf(".ok") != -1) {
                     //目标路径 = 原路径新闻论坛数据拆共 + 时间日期
                     String path = InitParam.InitDateCP_PATH.toString();
@@ -617,8 +707,8 @@ public static void unZipAllThread(){
                 }
             }
         }
-        System.out.println("----------新闻原文件解压备份完成，已解压并备份文件个数："+newlist.size()+"-----------");
-        logger.info("----------新闻原文件解压备份完成，已解压并备份文件个数："+newlist.size()+"-----------");
+        System.out.println("----------新闻原文件解压备份完成，已解压并备份文件个数："+localnewlist.size()+"-----------");
+        logger.info("----------新闻原文件解压备份完成，已解压并备份文件个数："+localnewlist.size()+"-----------");
 
 
 
@@ -657,6 +747,13 @@ public static void unZipAllThread(){
 
 
         NewsParserJob.newRun(txtmap);
+        System.out.println("--------------开始删除nas目录的新闻原文件--------------");
+        logger.info("---------------开始删除nas目录的新闻原文件--------------");
+        for (int i = 0; i < newlist.size(); i++) {
+            deleteFile(newlist.get(i).toString());
+        }
+        System.out.println("--------------删除nas目录的新闻原文件结束--------------");
+        logger.info("---------------删除nas目录的新闻原文件结束--------------");
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date2 = new Date(System.currentTimeMillis());
         System.out.println("新闻结束时间——"+formatter.format(date2));
@@ -953,11 +1050,28 @@ public static void unZipAllThread(){
         return newsresult;
     }
 
+    //读取配置文件原文件的位置，把所有位置整合到list集合里面并返回
+    public static ArrayList getLocalNewsInitFilePath(){
+        ArrayList<String> newsresult = new ArrayList<String>();
+        String newsPath = InitParam.LOCAL_InitDate_NEWS_PATH;
+        newsresult = getFileMAX(newsPath);
+        return newsresult;
+    }
 
     //读取配置文件原文件的位置，把所有位置整合到list集合里面并返回
     public static ArrayList getWeiBoInitFilePath(){
         ArrayList<String> weiboresult = new ArrayList<String>();
         String weiboPath = InitParam.InitDate_WEIBO_PATH;
+
+        weiboresult = getFileMAX(weiboPath);
+
+        return weiboresult;
+    }
+
+    //读取配置文件原文件的位置，把所有位置整合到list集合里面并返回
+    public static ArrayList getLocalWeiBoInitFilePath(){
+        ArrayList<String> weiboresult = new ArrayList<String>();
+        String weiboPath = InitParam.LOCAL_InitDate_WEIBO_PATH;
 
         weiboresult = getFileMAX(weiboPath);
 
@@ -974,12 +1088,27 @@ public static void unZipAllThread(){
         return weixinresult;
     }
 
+    //读取配置文件原文件的位置，把所有位置整合到list集合里面并返回
+    public static ArrayList getLocalWeiXinInitFilePath(){
+        ArrayList<String> weixinresult = new ArrayList<String>();
+        String weixinPath = InitParam.LOCAL_InitDate_WEIXIN_PATH;
+        weixinresult = getFileMAX(weixinPath);
 
+        return weixinresult;
+    }
 
     //读取配置文件原文件的位置，把所有位置整合到list集合里面并返回
     public static ArrayList getXinHaoInitFilePath(){
         ArrayList<String> xinhaoresult = new ArrayList<String>();
         String xinhaoPath = InitParam.InitDate_XINHAO_PATH;
+        xinhaoresult = getFileMAX(xinhaoPath);
+        return xinhaoresult;
+    }
+
+    //读取配置文件原文件的位置，把所有位置整合到list集合里面并返回
+    public static ArrayList getLocalXinHaoInitFilePath(){
+        ArrayList<String> xinhaoresult = new ArrayList<String>();
+        String xinhaoPath = InitParam.LOCAL_InitDate_XINHAO_PATH;
         xinhaoresult = getFileMAX(xinhaoPath);
         return xinhaoresult;
     }

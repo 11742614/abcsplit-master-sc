@@ -6,19 +6,27 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.abc.util.ZipUtil;
 
 public class Test2  {
 
     public static void main(String[] args) {
-        //得到时间类
-        Calendar date = Calendar.getInstance();
-        //设置时间为 xx-xx-xx 00:00:00
-        date.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DATE), 14, 9, 0);
-        //一天的毫秒数
-        long daySpan = 24 * 60 * 60 * 1000;
-        //得到定时器实例
-        Timer custTime = new Timer();
-        custTime.schedule(new EnterpriseNameJob(), date.getTime(), daySpan);
-//        custTime.schedule(new EnterpriseNameJob(), date.getTime());
+//        String str = "java怎么，把字符,串中~@#$^&的asdasd的汉200字取出来";
+//        String regEx="[a-zA-Z`~@#$^&*+=|{}\\[\\].<>/~！@#&*|]";
+//        Pattern p = Pattern.compile(regEx);
+//        Matcher m = p.matcher(str);
+//        str = m.replaceAll("").trim();
+//
+//        System.out.println(str);
+
+        for (int i = 0; i < 10; i++) {
+            if(i==5) {
+                continue;
+            }
+            System.out.println(i);
+        }
     }
 }

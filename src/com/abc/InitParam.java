@@ -20,6 +20,17 @@ import org.apache.log4j.Logger;
 
 public class InitParam {
   private static final Logger logger = Logger.getLogger(InitParam.class);
+  public static String LOCAL_InitDate_NEWS_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/CRUV/OUT/TRS/news";
+  public static String LOCAL_InitDate_WEIXIN_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/CRUV/OUT/TRS/weixin";
+  public static String LOCAL_InitDate_WEIBO_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/CRUV/OUT/TRS/weibo";
+  public static String LOCAL_InitDate_XINHAO_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/CRUV/OUT/TRS/xinhao";
+
+  public static String LOCAL_NEWS_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/trstemp/ANALYSISDATA/NEWS";
+  public static String LOCAL_WEIXIN_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/trstemp/ANALYSISDATA/WEIXIN";
+  public static String LOCAL_WEIBO_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/trstemp/ANALYSISDATA/WEIBO";
+  public static String LOCAL_XINHAO_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/datatemp/trstemp/ANALYSISDATA/XINHAO";
+
+
   public static String LOCAL_CUST_MODE_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123/test";
   public static String LOCAL_CUST_FILTER_PATH = "C:/Users/939658858/Desktop/123333/农行数据文件/123";
   public static String MAX_FILE = "500";
@@ -160,6 +171,18 @@ public class InitParam {
     InitDate_WEIBO_PATH = props.getProperty("InitDate_WEIBO_PATH");
     InitDate_WEIXIN_PATH =  props.getProperty("InitDate_WEIXIN_PATH");
     InitDate_XINHAO_PATH =  props.getProperty("InitDate_XINHAO_PATH");
+
+
+    LOCAL_InitDate_NEWS_PATH = props.getProperty("LOCAL_InitDate_NEWS_PATH");
+    LOCAL_InitDate_WEIXIN_PATH = props.getProperty("LOCAL_InitDate_WEIXIN_PATH");
+    LOCAL_InitDate_WEIBO_PATH = props.getProperty("LOCAL_InitDate_WEIBO_PATH");
+    LOCAL_InitDate_XINHAO_PATH = props.getProperty("LOCAL_InitDate_XINHAO_PATH");
+
+    LOCAL_NEWS_PATH = props.getProperty("LOCAL_NEWS_PATH");
+    LOCAL_WEIXIN_PATH = props.getProperty("LOCAL_WEIXIN_PATH");
+    LOCAL_WEIBO_PATH = props.getProperty("LOCAL_WEIBO_PATH");
+    LOCAL_XINHAO_PATH = props.getProperty("LOCAL_XINHAO_PATH");
+
 
 
     InitDateCP_PATH = props.getProperty("InitDateCP_PATH");

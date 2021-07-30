@@ -22,12 +22,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class SignalParserJob extends TimerTask {
-  private static final Logger logger = Logger.getLogger(SignalParserJob.class);
+public class SignalParserJob_bak20210728 extends TimerTask {
+  private static final Logger logger = Logger.getLogger(SignalParserJob_bak20210728.class);
 //  private File[] oklist = null;
   private File[] oklist = null;
   public static ConcurrentMap<String, String> custMaps = new ConcurrentHashMap();
-  public SignalParserJob() {
+  public SignalParserJob_bak20210728() {
   }
 
   public void run() {
@@ -52,7 +52,7 @@ public class SignalParserJob extends TimerTask {
   }
 
   public static void XinHaorun(Map<String,String> txtmap) {
-    SignalParserJob signalParserJob = new SignalParserJob();
+    SignalParserJob_bak20210728 signalParserJob = new SignalParserJob_bak20210728();
     logger.info("准确信号数据拆分任务开始");
     signalParserJob.readfilelist();
     File[] var4 = signalParserJob.oklist;
@@ -68,7 +68,7 @@ public class SignalParserJob extends TimerTask {
         e.printStackTrace();
       }
     }
-    String signalFile  = InitParam.LOCAL_XINHAO_PATH+"/";
+    String signalFile  = InitParam.SIGNAL_PATH+"/";
     ZipUtil.delAllFile(signalFile);
     logger.info("准确信号数据拆分任务结束");
   }
@@ -119,7 +119,7 @@ public class SignalParserJob extends TimerTask {
 
   private boolean readtrsfile(File okfile,Map<String,String> txtmap) throws IOException {
     String filename = okfile.getName().replace(".ok", ".trs");
-    File trsfile = new File(InitParam.LOCAL_XINHAO_PATH + "/" + filename);
+    File trsfile = new File(InitParam.SIGNAL_PATH + "/" + filename);
     if (trsfile.exists()) {
       logger.info(trsfile.getAbsoluteFile());
     }
@@ -1128,7 +1128,7 @@ public class SignalParserJob extends TimerTask {
       fsu.mkdirs();
     }
 
-    File newspath = new File(InitParam.LOCAL_XINHAO_PATH);
+    File newspath = new File(InitParam.SIGNAL_PATH);
     this.oklist = newspath.listFiles(new FileFilter() {
       public boolean accept(File pathname) {
         return pathname.getName().endsWith("ok");

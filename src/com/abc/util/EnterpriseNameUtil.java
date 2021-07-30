@@ -84,16 +84,18 @@ public class EnterpriseNameUtil {
                 String txtfile = InitParam.LOCAL_CUST_MODE_PATH + "\\" + "custname.txt";
                 //过滤文件的位置
                 String guolvFile = InitParam.LOCAL_CUST_FILTER_PATH + "\\" + "custfilter_名单过滤词.txt";
-                makeEnterpriseNameFile(list.get(i).toString(),txtfile,guolvFile);
-                //nas上的路径
-                File CUST_MODE_PATH = new File(InitParam.CUST_PATH+"/"+ "custname.txt");
-                //从nas复制到本地
-                File tFile = new File(txtfile);
-                ZipUtil.copyFileUsingFileChannels(tFile,CUST_MODE_PATH);
-                logger.info("***************企业名单已复制到nas******************");
-                ZipUtil.deleteFile(txtfile);
-                logger.info("***************本地企业名单txt已删除******************");
-                System.out.println("-------------企业名单已复制到nas,本地企业名单txt已删除----------------------");
+                String refile = makeEnterpriseNameFile(list.get(i).toString(),txtfile,guolvFile);
+                if(!refile.equals("获取的企业名单文件为空")) {
+                    //nas上的路径
+                    File CUST_MODE_PATH = new File(InitParam.CUST_PATH + "/" + "custname.txt");
+                    //从nas复制到本地
+                    File tFile = new File(txtfile);
+                    ZipUtil.copyFileUsingFileChannels(tFile, CUST_MODE_PATH);
+                    logger.info("***************企业名单已复制到nas******************");
+                    ZipUtil.deleteFile(txtfile);
+                    logger.info("***************本地企业名单txt已删除******************");
+                    System.out.println("-------------企业名单已复制到nas,本地企业名单txt已删除----------------------");
+                }
             }
                 ZipUtil.deleteFile(list.get(i).toString());
         }
@@ -189,24 +191,28 @@ public class EnterpriseNameUtil {
      */
     public static String makeEnterpriseNameFile(String enterpriseNameFilePath,String filepath,String filterPath) throws IOException {
         HashMap<String,String> hashMap = fileContent(enterpriseNameFilePath,filterPath);
-        clearInfoForFile(filepath);
-        StringBuffer stringBuffer = new StringBuffer();
-        for (Entry<String, String> entry : hashMap.entrySet()) {
-            stringBuffer.append(entry.getKey()+"\t"+entry.getValue()+"\r\n");
+        if(hashMap.size()!=0) {
+            clearInfoForFile(filepath);
+            StringBuffer stringBuffer = new StringBuffer();
+            for (Entry<String, String> entry : hashMap.entrySet()) {
+                stringBuffer.append(entry.getKey() + "\t" + entry.getValue() + "\r\n");
+            }
+            try {
+                FileWriter fw = null;
+                fw = new FileWriter(filepath, true);
+                fw.write(stringBuffer.toString());
+                fw.close();
+            } catch (IOException e) {
+                logger.info("***************企业名单生成失败******************");
+                logger.info("***************" + e + "******************");
+                return "生成文件失败";
+            }
+            logger.info("***************企业名单生成成功******************");
+            return "生成文件成功";
+        }else {
+            logger.info("***************获取的企业名单文件为空******************");
+            return "获取的企业名单文件为空";
         }
-        try {
-            FileWriter fw = null;
-            fw = new FileWriter(filepath,true);
-            fw.write(stringBuffer.toString());
-            fw.close();
-        } catch (IOException e) {
-            logger.info("***************企业名单生成失败******************");
-            logger.info("***************"+e+"******************");
-            return "生成文件失败";
-        }
-        logger.info("***************企业名单生成成功******************");
-        return "生成文件成功";
-
     }
 
     // 清空已有的文件内容，以便下次重新写入新的内容

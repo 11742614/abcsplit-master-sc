@@ -54,6 +54,7 @@ public class FileTUtils {
         CharArrayWriter  tempStream = new CharArrayWriter();
         // 替换
         String line = null;
+        boolean isinit = false;
         while ( (line = bufIn.readLine()) != null) {
             // 替换每行中, 符合条件的字符串
             line = line.replaceAll(srcStr, replaceStr);
@@ -61,6 +62,14 @@ public class FileTUtils {
             tempStream.write(line);
             // 添加换行符
             tempStream.append(System.getProperty("line.separator"));
+            if(line.contains("0") || line.contains("1") || line.contains("2") || line.contains("3") ||
+            line.contains("NEWS") || line.contains("WB") || line.contains("WX") || line.contains("XH")){
+                isinit = true;
+            }
+        }
+        if (!isinit){
+            System.out.println("=======================初始化文件内容有误，请检查初始化文件==============================");
+            logger.info("=======================初始化文件内容有误，请检查初始化文件==============================");
         }
         // 关闭 输入流
         bufIn.close();

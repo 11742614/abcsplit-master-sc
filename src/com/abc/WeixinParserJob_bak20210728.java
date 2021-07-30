@@ -5,22 +5,6 @@
 
 package com.abc;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
-import java.util.UUID;
-
 import com.abc.util.EnterpriseNameUtil;
 import com.abc.util.TRSFileUtil;
 import com.abc.util.ZipUtil;
@@ -28,15 +12,25 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-public class WeiboParserJob extends TimerTask {
-  private static final Logger logger = Logger.getLogger(WeiboParserJob.class);
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+public class WeixinParserJob_bak20210728 extends TimerTask {
+  private static final Logger logger = Logger.getLogger(WeixinParserJob_bak20210728.class);
   private File[] oklist = null;
 
-  public WeiboParserJob() {
+  public WeixinParserJob_bak20210728() {
   }
 
   public void run() {
-//    logger.info("微博数据拆分任务开始");
+
+//    logger.info("微信数据拆分任务开始");
 //    this.readfilelist();
 //    File[] var4 = this.oklist;
 //    int var3 = this.oklist.length;
@@ -51,24 +45,24 @@ public class WeiboParserJob extends TimerTask {
 //        e.printStackTrace();
 //      }
 //    }
-//    String weiboFile = InitParam.WEIBO_PATH+"/";
-//    ZipUtil.delAllFile(weiboFile);
-//    logger.info("微博数据拆分任务结束");
+//    String weixinFile = InitParam.WEIXIN_PATH+"/";
+//    ZipUtil.delAllFile(weixinFile);
+//    logger.info("微信数据拆分任务结束");
   }
 
 
-  public static void weiBoRun(Map<String,String> txtmap) {
-    WeiboParserJob weiboParserJob = new WeiboParserJob();
-    logger.info("微博数据拆分任务开始");
-    weiboParserJob.readfilelist();
-    File[] var4 = weiboParserJob.oklist;
-    int var3 = weiboParserJob.oklist.length;
+
+  public static void WeiXinrun(Map<String,String> txtmap) {
+    WeixinParserJob_bak20210728 weixinParserJob = new WeixinParserJob_bak20210728();
+    logger.info("微信数据拆分任务开始");
+    weixinParserJob.readfilelist();
+    File[] var4 = weixinParserJob.oklist;
+    int var3 = weixinParserJob.oklist.length;
 
     for(int var2 = 0; var2 < var3; ++var2) {
-      System.out.println("微博数据拆分共"+var3+"个"+"正在处理第"+var2+"个");
       File okfile = var4[var2];
       try {
-        if (weiboParserJob.readtrsfile(okfile,txtmap)) {
+        if (weixinParserJob.readtrsfile(okfile,txtmap)) {
           okfile.delete();
         }
       } catch (IOException e) {
@@ -76,23 +70,23 @@ public class WeiboParserJob extends TimerTask {
         e.printStackTrace();
       }
     }
-    String weiboFile = InitParam.LOCAL_WEIBO_PATH+"/";
-    ZipUtil.delAllFile(weiboFile);
-    logger.info("微博数据拆分任务结束");
+    String weixinFile = InitParam.WEIXIN_PATH+"/";
+    ZipUtil.delAllFile(weixinFile);
+    logger.info("微信数据拆分任务结束");
   }
 
   private void createblank(boolean one) {
     String uuid = UUID.randomUUID().toString();
     String dateStr = DateUtils.dateFormat(new Date(), "yyyyMMdd");
-    String weixnfilename = InitParam.WB_TP + "-" + dateStr + "-" + uuid + ".txt";
-    String weixngzfilename = InitParam.WB_TP + "-" + dateStr + "-" + uuid + "." + InitParam.GZIP;
-    String weixnokfilename = InitParam.WB_TP + "-" + dateStr + "-" + uuid + "." + InitParam.CTRL;
+    String weixnfilename = InitParam.WX_TP + "-" + dateStr + "-" + uuid + ".txt";
+    String weixngzfilename = InitParam.WX_TP + "-" + dateStr + "-" + uuid + "." + InitParam.GZIP;
+    String weixnokfilename = InitParam.WX_TP + "-" + dateStr + "-" + uuid + "." + InitParam.CTRL;
     FileWriterWithEncoding weixnwriter = null;
     FileWriterWithEncoding weixnmd5writer = null;
 
     try {
       if (one) {
-        weixnwriter = new FileWriterWithEncoding(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weixnfilename, InitParam.CHARSET, true);
+        weixnwriter = new FileWriterWithEncoding(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixnfilename, InitParam.CHARSET, true);
       }
     } catch (IOException var12) {
       logger.error(var12.getMessage());
@@ -110,10 +104,10 @@ public class WeiboParserJob extends TimerTask {
 
     try {
       if (one) {
-        GZIPUtil.compressFile(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weixnfilename, InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weixngzfilename);
-        File txtf = new File(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weixnfilename);
+        GZIPUtil.compressFile(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixnfilename, InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixngzfilename);
+        File txtf = new File(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixnfilename);
         txtf.delete();
-        weixnmd5writer = new FileWriterWithEncoding(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weixnokfilename, InitParam.CHARSET, true);
+        weixnmd5writer = new FileWriterWithEncoding(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixnokfilename, InitParam.CHARSET, true);
         weixnmd5writer.write("");
         weixnmd5writer.flush();
         weixnmd5writer.close();
@@ -126,38 +120,38 @@ public class WeiboParserJob extends TimerTask {
 
   private boolean readtrsfile(File okfile,Map<String,String> txtmap) throws IOException {
     String filename = okfile.getName().replace(".ok", ".trs");
-    File trsfile = new File(InitParam.LOCAL_WEIBO_PATH + "/" + filename);
+    File trsfile = new File(InitParam.WEIXIN_PATH + "/" + filename);
     if (trsfile.exists()) {
       logger.info(trsfile.getAbsoluteFile());
     }
 
-    List<Map<String, Object>> dataList = TRSParser.readFile(trsfile, "GBK", InitParam.CP, InitParam.WEIBOCP_PATH);
+    List<Map<String, Object>> dataList = TRSParser.readFile(trsfile, "GBK", InitParam.CP, InitParam.WEIXINCP_PATH);
     //新增用来初始化数据，和企业名单碰撞
       dataList =TRSFileUtil.initListData(dataList,txtmap);
     if (dataList != null && dataList.size() != 0) {
       String dateStr = DateUtils.dateFormat(new Date(), "yyyyMMdd");
       String uuid = UUID.randomUUID().toString();
-      String weibofilename = InitParam.WB_TP + "-" + dateStr + "-" + uuid + ".txt";
+      String weixinfilename = InitParam.WX_TP + "-" + dateStr + "-" + uuid + ".txt";
       String splitfilename = InitParam.SP_TP + "-" + dateStr + "-" + uuid + ".txt";
       String unionfilename = InitParam.UN_TP + "-" + dateStr + "-" + uuid + ".txt";
-      String weibogzfilename = InitParam.WB_TP + "-" + dateStr + "-" + uuid + "." + InitParam.GZIP;
+      String weixingzfilename = InitParam.WX_TP + "-" + dateStr + "-" + uuid + "." + InitParam.GZIP;
       String splitgzfilename = InitParam.SP_TP + "-" + dateStr + "-" + uuid + "." + InitParam.GZIP;
       String uniongzfilename = InitParam.UN_TP + "-" + dateStr + "-" + uuid + "." + InitParam.GZIP;
-      String weibookfilename = InitParam.WB_TP + "-" + dateStr + "-" + uuid + "." + InitParam.CTRL;
+      String weixinokfilename = InitParam.WX_TP + "-" + dateStr + "-" + uuid + "." + InitParam.CTRL;
       String splitokfilename = InitParam.SP_TP + "-" + dateStr + "-" + uuid + "." + InitParam.CTRL;
       String unionokfilename = InitParam.UN_TP + "-" + dateStr + "-" + uuid + "." + InitParam.CTRL;
-      FileWriterWithEncoding weibowriter = null;
-      FileWriterWithEncoding weibosplitwriter = null;
-      FileWriterWithEncoding weibounionwriter = null;
-      FileWriterWithEncoding weibomd5writer = null;
-      FileWriterWithEncoding weibosplitmd5writer = null;
-      FileWriterWithEncoding weibounionmd5writer = null;
+      FileWriterWithEncoding weixinwriter = null;
+      FileWriterWithEncoding weixinsplitwriter = null;
+      FileWriterWithEncoding weixinunionwriter = null;
+      FileWriterWithEncoding weixinmd5writer = null;
+      FileWriterWithEncoding weixinsplitmd5writer = null;
+      FileWriterWithEncoding weixinunionmd5writer = null;
 
       File txtf;
       File txgztf;
       File txtfs;
       try {
-        txtf = new File(InitParam.WEIBOTO_PATH + "/" + dateStr);
+        txtf = new File(InitParam.WEIXINTO_PATH + "/" + dateStr);
         if (!txtf.exists()) {
           txtf.mkdirs();
         }
@@ -172,9 +166,9 @@ public class WeiboParserJob extends TimerTask {
           txtfs.mkdirs();
         }
 
-        weibowriter = new FileWriterWithEncoding(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weibofilename, InitParam.CHARSET, true);
-        weibosplitwriter = new FileWriterWithEncoding(InitParam.SPILTTO_PATH + "/" + dateStr + "/" + splitfilename, InitParam.CHARSET, true);
-        weibounionwriter = new FileWriterWithEncoding(InitParam.UNION_PATH + "/" + dateStr + "/" + unionfilename, InitParam.CHARSET, true);
+        weixinwriter = new FileWriterWithEncoding(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixinfilename, InitParam.CHARSET, true);
+        weixinsplitwriter = new FileWriterWithEncoding(InitParam.SPILTTO_PATH + "/" + dateStr + "/" + splitfilename, InitParam.CHARSET, true);
+        weixinunionwriter = new FileWriterWithEncoding(InitParam.UNION_PATH + "/" + dateStr + "/" + unionfilename, InitParam.CHARSET, true);
       } catch (IOException var37) {
         logger.error(var37.getMessage());
         return false;
@@ -188,19 +182,19 @@ public class WeiboParserJob extends TimerTask {
         do {
           if (!var39.hasNext()) {
             try {
-              if (weibowriter != null) {
-                weibowriter.flush();
-                weibowriter.close();
+              if (weixinwriter != null) {
+                weixinwriter.flush();
+                weixinwriter.close();
               }
 
-              if (weibounionwriter != null) {
-                weibounionwriter.flush();
-                weibounionwriter.close();
+              if (weixinunionwriter != null) {
+                weixinunionwriter.flush();
+                weixinunionwriter.close();
               }
 
-              if (weibosplitwriter != null) {
-                weibosplitwriter.flush();
-                weibosplitwriter.close();
+              if (weixinsplitwriter != null) {
+                weixinsplitwriter.flush();
+                weixinsplitwriter.close();
               }
             } catch (IOException var36) {
               logger.error(var36.getMessage());
@@ -208,27 +202,27 @@ public class WeiboParserJob extends TimerTask {
             }
 
             try {
-              GZIPUtil.compressFile(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weibofilename, InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weibogzfilename);
-              txtf = new File(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weibofilename);
+              GZIPUtil.compressFile(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixinfilename, InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixingzfilename);
+              txtf = new File(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixinfilename);
               txtf.delete();
-              weibomd5writer = new FileWriterWithEncoding(InitParam.WEIBOTO_PATH + "/" + dateStr + "/" + weibookfilename, InitParam.CHARSET, true);
-              weibomd5writer.write("");
-              weibomd5writer.flush();
-              weibomd5writer.close();
+              weixinmd5writer = new FileWriterWithEncoding(InitParam.WEIXINTO_PATH + "/" + dateStr + "/" + weixinokfilename, InitParam.CHARSET, true);
+              weixinmd5writer.write("");
+              weixinmd5writer.flush();
+              weixinmd5writer.close();
               GZIPUtil.compressFile(InitParam.UNION_PATH + "/" + dateStr + "/" + unionfilename, InitParam.UNION_PATH + "/" + dateStr + "/" + uniongzfilename);
               txgztf = new File(InitParam.UNION_PATH + "/" + dateStr + "/" + unionfilename);
               txgztf.delete();
-              weibounionmd5writer = new FileWriterWithEncoding(InitParam.UNION_PATH + "/" + dateStr + "/" + unionokfilename, InitParam.CHARSET, true);
-              weibounionmd5writer.write("");
-              weibounionmd5writer.flush();
-              weibounionmd5writer.close();
+              weixinunionmd5writer = new FileWriterWithEncoding(InitParam.UNION_PATH + "/" + dateStr + "/" + unionokfilename, InitParam.CHARSET, true);
+              weixinunionmd5writer.write("");
+              weixinunionmd5writer.flush();
+              weixinunionmd5writer.close();
               GZIPUtil.compressFile(InitParam.SPILTTO_PATH + "/" + dateStr + "/" + splitfilename, InitParam.SPILTTO_PATH + "/" + dateStr + "/" + splitgzfilename);
               txtfs = new File(InitParam.SPILTTO_PATH + "/" + dateStr + "/" + splitfilename);
               txtfs.delete();
-              weibosplitmd5writer = new FileWriterWithEncoding(InitParam.SPILTTO_PATH + "/" + dateStr + "/" + splitokfilename, InitParam.CHARSET, true);
-              weibosplitmd5writer.write("");
-              weibosplitmd5writer.flush();
-              weibosplitmd5writer.close();
+              weixinsplitmd5writer = new FileWriterWithEncoding(InitParam.SPILTTO_PATH + "/" + dateStr + "/" + splitokfilename, InitParam.CHARSET, true);
+              weixinsplitmd5writer.write("");
+              weixinsplitmd5writer.flush();
+              weixinsplitmd5writer.close();
               logger.info("成功转换数据文件:" + filename);
               return true;
             } catch (IOException var35) {
@@ -239,6 +233,7 @@ public class WeiboParserJob extends TimerTask {
 
           Map<String, Object> map = (Map)var39.next();
 //          datamap = this.parserData(map);
+          //新增
           datamap = this.parserTRSData(map,txtmap);
           for(Object key:datamap.keySet()){
             String keyy = key.toString();
@@ -256,8 +251,8 @@ public class WeiboParserJob extends TimerTask {
         }
         String line = "";
         int i = 0;
-        String[] var30 = InitParam.WEIBO_FILEDSES;
-        int var29 = InitParam.WEIBO_FILEDSES.length;
+        String[] var30 = InitParam.WEIXIN_FILEDSES;
+        int var29 = InitParam.WEIXIN_FILEDSES.length;
 
         int n;
         for(n = 0; n < var29; ++n) {
@@ -275,7 +270,7 @@ public class WeiboParserJob extends TimerTask {
           ++i;
         }
         if(splits.size()!=0) {
-          this.write(weibowriter, line);
+          this.write(weixinwriter, line);
         }
 //        Map<String, String> dataMaps = this.parserUnionMap(datamap);
         Map<String, String> dataMaps = this.parserTRSUnionMap(datamap);
@@ -300,7 +295,7 @@ public class WeiboParserJob extends TimerTask {
           ++n;
         }
 
-        this.write(weibounionwriter, line_);
+        this.write(weixinunionwriter, line_);
 
         Iterator var46 = splits.iterator();
 
@@ -328,7 +323,7 @@ public class WeiboParserJob extends TimerTask {
             }
           }
 
-          this.write(weibosplitwriter, slitLine);
+          this.write(weixinsplitwriter, slitLine);
         }
       }
     } else {
@@ -344,9 +339,175 @@ public class WeiboParserJob extends TimerTask {
     }
 
   }
+  private Map<String, String> parserTRSUnionMap(Map<String, String> map) {
+    Map<String, String> datamap = new HashMap();
+    String []mapkey   = {"IRU_SID","IRU_NEWSKIND","IRU_HKEY","IRU_OLDURLNAME","IRU_URLDATE","IRU_URLTIME","IRU_LOADATE","IRU_LOADTIME","IRU_LASTDATE","IRU_LASTTIME","IRU_AUTHORS","IRU_RDCOUNT","IRU_PRCOUNT","IRU_RANK","IRU_KEYWORD","IRU_CONTENT","IRU_BACKUP1","IRU_BACKUP2","IRU_BACKUP3","IRU_BACKUP4","IRU_BACKUP5","IRU_BACKUP6","IRU_BACKUP7","IRU_BACKUP8","IRU_BACKUP9","IRU_BACKUP10","IRU_BACKUP11","IRU_SENDATE","IRU_SENDTIME","IRU_SIMRANK","IRU_SIMID","IRU_SIMV","IRU_SIGNT"};
+
+    String []mapvalue = {"IRC_SID","IRC_NEWSKIND","IRC_HKEY","IRC_URLNAME","IRC_URLDATE","IRC_URLTIME","IRC_LOADATE","IRC_LOADTIME","IRC_LASTDATE","IRC_LASTTIME","IRC_AUTHORS","IRC_RDCOUNT","IRC_PRCOUNT","IRC_RANK","IRC_KEYWORD","IRC_CONTENT","IRC_BACKUP1","IRC_BACKUP2","IRC_BACKUP3","IRC_BACKUP4","IRC_BACKUP5","IRC_BACKUP6","IRC_BACKUP7","IRC_BACKUP8","IRC_BACKUP9","IRC_BACKUP10","IRC_BACKUP11","IRC_SENDATE","IRC_SENDTIME","IRC_SIMRANK","IRC_SIMID","IRC_SIMV","IRC_SIGNT"};
+    for (int j = 0; j < mapkey.length; j++) {
+      String trsstr = (String)map.get(mapvalue[j]);
+      if (trsstr == null) {
+        trsstr = "";
+      }
+      datamap.put(mapkey[j], trsstr);
+    }
+    //整合表里面没有值的   全部设置为空
+    String []mapkon ={"IRU_AUTHORID","IRU_RETWEETED_SCREEN_ID","IRU_RETWEETED_SCREEN_NAME","IRU_RETWEETED_URL","IRU_URLTITLE","IRU_abstract","IRU_SITENAME","channel","IRU_SRCNAME","IRU_VIA","IRU_RTTCOUNT","IRU_COMMTCOUNT","IRU_GROUPNAME","IRU_BBSNUM","IRU_NRESERVED2","IRU_NRESERVED3","IRU_BACKUP12"};
+    for (int j = 0; j < mapkon.length; j++) {
+      datamap.put(mapkon[j], "");
+    }
+
+    return datamap;
+  }
+
+  private Map<String, String> parserUnionMap(Map<String, String> map) {
+    Map<String, String> _map = new HashMap();
+    String IRC_SID = (String)map.get("IRC_SID");
+    if (IRC_SID == null) {
+      IRC_SID = "";
+    }
+
+    _map.put("IRC_SID", IRC_SID);
+    String IRC_NEWSKIND = (String)map.get("IRC_NEWSKIND");
+    if (IRC_NEWSKIND == null) {
+      IRC_NEWSKIND = "";
+    }
+
+    _map.put("IRC_NEWSKIND", IRC_NEWSKIND);
+    String IRC_HKEY = (String)map.get("IRC_HKEY");
+    if (IRC_HKEY == null) {
+      IRC_HKEY = "";
+    }
+
+    _map.put("IRC_HKEY", IRC_HKEY);
+    String IRC_URLDATE = (String)map.get("IRC_URLDATE");
+    if (IRC_URLDATE == null) {
+      IRC_URLDATE = "";
+    }
+
+    _map.put("IRC_URLDATE", IRC_URLDATE);
+    String IRC_URLTIME = (String)map.get("IRC_URLTIME");
+    if (IRC_URLTIME == null) {
+      IRC_URLTIME = "";
+    }
+
+    _map.put("IRC_URLTIME", IRC_URLTIME);
+    String IRC_LOADATE = (String)map.get("IRC_LOADATE");
+    if (IRC_LOADATE == null) {
+      IRC_LOADATE = "";
+    }
+
+    _map.put("IRC_LOADATE", IRC_LOADATE);
+    String IRC_LOADTIME = (String)map.get("IRC_LOADTIME");
+    if (IRC_LOADTIME == null) {
+      IRC_LOADTIME = "";
+    }
+
+    _map.put("IRC_LOADTIME", IRC_LOADTIME);
+    String IRC_LASTDATE = (String)map.get("IRC_LASTDATE");
+    if (IRC_LASTDATE == null) {
+      IRC_LASTDATE = "";
+    }
+
+    _map.put("IRC_LASTDATE", IRC_LASTDATE);
+    String IRC_LASTTIME = (String)map.get("IRC_LASTTIME");
+    if (IRC_LASTTIME == null) {
+      IRC_LASTTIME = "";
+    }
+
+    _map.put("IRC_LASTTIME", IRC_LASTTIME);
+    String IRC_wechatname = (String)map.get("IRC_wechatname");
+    if (IRC_wechatname == null) {
+      IRC_wechatname = "";
+    }
+
+    _map.put("IRC_wechatname", IRC_wechatname);
+    String IRC_wechatid = (String)map.get("IRC_wechatid");
+    if (IRC_wechatid == null) {
+      IRC_wechatid = "";
+    }
+
+    _map.put("IRC_wechatid", IRC_wechatid);
+    String IRC_AUTHORS = (String)map.get("IRC_AUTHORS");
+    if (IRC_AUTHORS == null) {
+      IRC_AUTHORS = "";
+    }
+
+    _map.put("IRC_AUTHORS", IRC_AUTHORS);
+    String IRC_URLTITLE = (String)map.get("IRC_URLTITLE");
+    if (IRC_URLTITLE == null) {
+      IRC_URLTITLE = "";
+    }
+
+    _map.put("IRC_URLTITLE", IRC_URLTITLE);
+    String IRC_abstract = (String)map.get("IRC_abstract");
+    if (IRC_abstract == null) {
+      IRC_abstract = "";
+    }
+
+    _map.put("IRC_abstract", IRC_abstract);
+    String IRC_KEYWORD = (String)map.get("IRC_KEYWORD");
+    if (IRC_KEYWORD == null) {
+      IRC_KEYWORD = "";
+    }
+
+    _map.put("IRB_KEYWORD", IRC_KEYWORD);
+    String IRC_CONTENT = (String)map.get("IRC_CONTENT");
+    if (IRC_CONTENT == null) {
+      IRC_CONTENT = "";
+    }
+
+    _map.put("IRC_CONTENT", IRC_CONTENT);
+    String IRC_URLNAME = (String)map.get("IRC_URLNAME");
+    if (IRC_URLNAME == null) {
+      IRC_URLNAME = "";
+    }
+
+    _map.put("IRC_URLNAME", IRC_URLNAME);
+    String IRC_RANK = (String)map.get("IRC_RANK");
+    if (IRC_RANK == null) {
+      IRC_RANK = "";
+    }
+
+    _map.put("IRC_RANK", IRC_RANK);
+    String IRC_RDCOUNT = (String)map.get("IRC_RDCOUNT");
+    if (IRC_RDCOUNT == null) {
+      IRC_RDCOUNT = "";
+    }
+
+    _map.put("IRC_RDCOUNT", IRC_RDCOUNT);
+    String IRC_PRCOUNT = (String)map.get("IRC_PRCOUNT");
+    if (IRC_PRCOUNT == null) {
+      IRC_PRCOUNT = "";
+    }
+
+    _map.put("IRC_PRCOUNT", IRC_PRCOUNT);
+    _map.put("IRC_BACKUP1", "");
+    _map.put("IRC_BACKUP2", "");
+    _map.put("IRC_BACKUP3", "");
+    _map.put("IRC_BACKUP4", "");
+    _map.put("IRC_BACKUP5", "");
+    _map.put("IRC_BACKUP6", "");
+    _map.put("IRC_BACKUP7", "");
+    _map.put("IRC_BACKUP8", "");
+    _map.put("IRC_BACKUP9", "");
+    _map.put("IRC_BACKUP10", "");
+    _map.put("IRC_BACKUP11", "");
+    _map.put("IRC_SENDATE", DateUtils.dateFormat(new Date(), "yyyyMMdd"));
+    _map.put("IRC_SENDTIME", DateUtils.dateFormat(new Date(), "HHmmss"));
+    return _map;
+  }
 
   private List<Map<String, String>> splitData(Map<String, String> data) {
     List<Map<String, String>> dataList = new ArrayList();
+//    String CATALOG3 = (String)data.get("CATALOG3");
+////    String CATALOG1 = (String)data.get("CATALOG1");
+//    String CATALOG12 = (String)data.get("CATALOG12");
+//    String CATALOG16 = (String)data.get("CATALOG16");
+//    String CATALOG9 = (String)data.get("CATALOG9");
+//    String CATALOG20 = (String)data.get("CATALOG20");
+//    String CATALOG21 = (String)data.get("CATALOG21");
+//    String CATALOG11 = (String)data.get("CATALOG11");
     //area
     String CATALOG3 = (String)data.get("CATALOG3");
 //    String CATALOG1 = (String)data.get("CATALOG1");
@@ -379,10 +540,10 @@ public class WeiboParserJob extends TimerTask {
     }
 
     int num = 1;
-    String IRN_SID = (String)data.get("IRB_SID");
+    String IRN_SID = (String)data.get("IRC_SID");
     String IRA_SENDATE = (String)data.get("IRC_SENDATE");
     String IRA_SENDTIME = (String)data.get("IRC_SENDTIME");
-    String IRB_URLDATE = (String)data.get("IRB_URLDATE");
+    String IRC_URLDATE = (String)data.get("IRC_URLDATE");
     List<String> areaes = ParserUtil.getAreas(CATALOG3);
     String APC_SIMRANK = (String)data.get("IRC_SIMRANK");
     String APC_SIMID = (String)data.get("IRC_SIMID");
@@ -390,7 +551,7 @@ public class WeiboParserJob extends TimerTask {
     String APV_SIGNT = (String)data.get("IRC_SIGNT");
     List industries;
     if (areaes != null && areaes.size() > 0) {
-      industries = ParserUtil.parseAreaRisk(areaes, CATALOG16, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "13", IRB_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
+      industries = ParserUtil.parseAreaRisk(areaes, CATALOG16, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "12", IRC_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
       if (!industries.isEmpty()) {
         dataList.addAll(industries);
         num += industries.size();
@@ -399,7 +560,7 @@ public class WeiboParserJob extends TimerTask {
 
     industries = ParserUtil.getIndustrys(CATALOG21);
     if (industries != null && industries.size() > 0) {
-      List<Map<String, String>> list = ParserUtil.parseIndustryRisk(industries, CATALOG11, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "13", IRB_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
+      List<Map<String, String>> list = ParserUtil.parseIndustryRisk(industries, CATALOG11, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "12", IRC_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
       if (!list.isEmpty()) {
         dataList.addAll(list);
         num += list.size();
@@ -412,7 +573,7 @@ public class WeiboParserJob extends TimerTask {
     }
 
     if (macroes != null && macroes.length > 0) {
-      List<Map<String, String>> list = ParserUtil.parseMacroRisk(macroes, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "13", IRB_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
+      List<Map<String, String>> list = ParserUtil.parseMacroRisk(macroes, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "12", IRC_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
       if (!list.isEmpty()) {
         dataList.addAll(list);
         num += list.size();
@@ -426,14 +587,14 @@ public class WeiboParserJob extends TimerTask {
 
     List list;
     if (companies != null && companies.length > 0) {
-      list = ParserUtil.parseCustRisk(companies, CATALOG12, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "13", IRB_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
+      list = ParserUtil.parseCustRisk(companies, CATALOG12, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "12", IRC_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
       if (!list.isEmpty()) {
         dataList.addAll(list);
         num += list.size();
       }
     }
 
-//    list = ParserUtil.parseZFMRisk(IRA_publicsentiment, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "12", IRB_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
+//    list = ParserUtil.parseZFMRisk(IRA_publicsentiment, IRA_SENDATE, IRA_SENDTIME, IRN_SID, "12", IRC_URLDATE, num,APC_SIMRANK,APC_SIMID,APC_SIMV,APV_SIGNT);
 //    if (!list.isEmpty()) {
 //      dataList.addAll(list);
 //      int var10000 = num + list.size();
@@ -441,171 +602,6 @@ public class WeiboParserJob extends TimerTask {
 
     return dataList;
   }
-  private Map<String, String> parserTRSUnionMap(Map<String, String> map){
-    Map<String, String> datamap = new HashMap();
-    String []mapkey   = {"IRU_SID","IRU_NEWSKIND","IRU_HKEY","IRU_URLNAME","IRU_OLDURLNAME","IRU_URLDATE","IRU_URLTIME","IRU_LOADATE","IRU_LOADTIME","IRU_LASTDATE","IRU_LASTTIME","IRU_AUTHORID","IRU_AUTHORS","IRU_RETWEETED_SCREEN_ID","IRU_RETWEETED_SCREEN_NAME","IRU_RETWEETED_URL","IRU_VIA","IRU_RTTCOUNT","IRU_COMMTCOUNT","IRU_PRCOUNT","IRU_KEYWORD","IRU_CONTENT","IRU_BACKUP1","IRU_BACKUP2","IRU_BACKUP3","IRU_BACKUP4","IRU_BACKUP5","IRU_BACKUP6","IRU_BACKUP7","IRU_BACKUP8","IRU_BACKUP9","IRU_BACKUP10","IRU_BACKUP11","IRU_SENDATE","IRU_SENDTIME","IRU_SIMRANK","IRU_SIMID","IRU_SIMV","IRU_SIGNT"};
-    String []mapvalue = {"IRB_SID","IRB_NEWSKIND","IRB_HKEY","IRB_URLNAME","IRB_URLNAME","IRB_URLDATE","IRB_URLTIME","IRB_LOADATE","IRB_LOADTIME","IRB_LASTDATE","IRC_LASTTIME","IRB_UID","IRB_SCREEN_NAME","IRB_RETWEETED_UID","IRB_RETWEETED_SCREEN_NAME","IRB_RETWEETED_URL","IRB_VIA","IRB_RTTCOUNT","IRB_COMMTCOUNT","IRB_APPROVE_COUNT","IRB_KEYWORD","IRB_CONTENT","IRC_BACKUP1","IRC_BACKUP2","IRC_BACKUP3","IRC_BACKUP4","IRC_BACKUP5","IRC_BACKUP6","IRC_BACKUP7","IRC_BACKUP8","IRC_BACKUP9","IRC_BACKUP10","IRC_BACKUP11","IRC_SENDATE","IRC_SENDTIME","IRC_SIMRANK","IRC_SIMID","IRC_SIMV","IRC_SIGNT"};
-    for (int j = 0; j < mapkey.length; j++) {
-      String trsstr = (String)map.get(mapvalue[j]);
-      if (trsstr == null) {
-        trsstr = "";
-      }
-      datamap.put(mapkey[j], trsstr);
-    }
-    //整合表里面没有值的
-    String []mapkon ={"IRU_URLTITLE","IRU_abstract","IRU_SITENAME","channel","IRU_SRCNAME","IRU_RDCOUNT","IRU_GROUPNAME","IRU_BBSNUM","IRU_NRESERVED2","IRU_NRESERVED3","IRU_RANK","IRU_BACKUP12"};
-    for (int j = 0; j < mapkon.length; j++) {
-      datamap.put(mapkon[j], "");
-    }
-
-    return datamap;
-  }
-
-
-  private Map<String, String> parserUnionMap(Map<String, String> map) {
-    Map<String, String> _map = new HashMap();
-    String IRB_SID = (String)map.get("IRB_SID");
-    if (IRB_SID == null) {
-      IRB_SID = "";
-    }
-
-    _map.put("IRC_SID", IRB_SID);
-    String IRB_NEWSKIND = (String)map.get("IRB_NEWSKIND");
-    if (IRB_NEWSKIND == null) {
-      IRB_NEWSKIND = "";
-    }
-
-    _map.put("IRC_NEWSKIND", IRB_NEWSKIND);
-    String IRB_HKEY = (String)map.get("IRB_HKEY");
-    if (IRB_HKEY == null) {
-      IRB_HKEY = "";
-    }
-
-    _map.put("IRC_HKEY", IRB_HKEY);
-    String IRB_URLDATE = (String)map.get("IRB_URLDATE");
-    if (IRB_URLDATE == null) {
-      IRB_URLDATE = "";
-    }
-
-    _map.put("IRC_URLDATE", IRB_URLDATE);
-    String IRB_URLTIME = (String)map.get("IRB_URLTIME");
-    if (IRB_URLTIME == null) {
-      IRB_URLTIME = "";
-    }
-
-    _map.put("IRC_URLTIME", IRB_URLTIME);
-    String IRB_LOADATE = (String)map.get("IRB_LOADATE");
-    if (IRB_LOADATE == null) {
-      IRB_LOADATE = "";
-    }
-
-    _map.put("IRC_LOADATE", IRB_LOADATE);
-    String IRB_LOADTIME = (String)map.get("IRB_LOADTIME");
-    if (IRB_LOADTIME == null) {
-      IRB_LOADTIME = "";
-    }
-
-    _map.put("IRC_LOADTIME", IRB_LOADTIME);
-    String IRB_LASTDATE = (String)map.get("IRB_LASTDATE");
-    if (IRB_LASTDATE == null) {
-      IRB_LASTDATE = "";
-    }
-
-    _map.put("IRC_LASTDATE", IRB_LASTDATE);
-    String IRB_LASTTIME = (String)map.get("IRB_LASTTIME");
-    if (IRB_LASTTIME == null) {
-      IRB_LASTTIME = "";
-    }
-
-    _map.put("IRC_LASTTIME", IRB_LASTTIME);
-    String IRB_UID = (String)map.get("IRB_UID");
-    if (IRB_UID == null) {
-      IRB_UID = "";
-    }
-
-    _map.put("IR_UID", IRB_UID);
-    String IRB_SCREEN_NAME = (String)map.get("IRB_SCREEN_NAME");
-    if (IRB_SCREEN_NAME == null) {
-      IRB_SCREEN_NAME = "";
-    }
-
-    _map.put("IRN_AUTHORS", IRB_SCREEN_NAME);
-    String IRB_RETWEETED_UID = (String)map.get("IRB_RETWEETED_UID");
-    if (IRB_RETWEETED_UID == null) {
-      IRB_RETWEETED_UID = "";
-    }
-
-    _map.put("SD_ID", IRB_RETWEETED_UID);
-    String IRB_RETWEETED_URL = (String)map.get("IRB_RETWEETED_URL");
-    if (IRB_RETWEETED_URL == null) {
-      IRB_RETWEETED_URL = "";
-    }
-
-    _map.put("IRB_RETWEETED_URL", IRB_RETWEETED_URL);
-    String IRB_RETWEETED_SCREEN_NAME = (String)map.get("IRB_RETWEETED_SCREEN_NAME");
-    if (IRB_RETWEETED_SCREEN_NAME == null) {
-      IRB_RETWEETED_SCREEN_NAME = "";
-    }
-
-    _map.put("IRB_RETWEETED_SCREEN_NAME", IRB_RETWEETED_SCREEN_NAME);
-    String IRB_KEYWORD = (String)map.get("IRB_KEYWORD");
-    if (IRB_KEYWORD == null) {
-      IRB_KEYWORD = "";
-    }
-
-    _map.put("IRB_KEYWORD", IRB_KEYWORD);
-    String IRB_CONTENT = (String)map.get("IRB_CONTENT");
-    if (IRB_CONTENT == null) {
-      IRB_CONTENT = "";
-    }
-
-    _map.put("IRB_CONTENT", IRB_CONTENT);
-    String IRB_URLNAME = (String)map.get("IRB_URLNAME");
-    if (IRB_URLNAME == null) {
-      IRB_URLNAME = "";
-    }
-
-    _map.put("IRB_URLNAME", IRB_URLNAME);
-    String IRB_VIA = (String)map.get("IRB_VIA");
-    if (IRB_VIA == null) {
-      IRB_VIA = "";
-    }
-
-    _map.put("IRB_VIA", IRB_VIA);
-    String IRB_RTTCOUNT = (String)map.get("IRB_RTTCOUNT");
-    if (IRB_RTTCOUNT == null) {
-      IRB_RTTCOUNT = "";
-    }
-
-    _map.put("IRB_RTTCOUNT", IRB_RTTCOUNT);
-    String IRB_COMMTCOUNT = (String)map.get("IRB_COMMTCOUNT");
-    if (IRB_COMMTCOUNT == null) {
-      IRB_COMMTCOUNT = "";
-    }
-
-    _map.put("IRB_COMMTCOUNT", IRB_COMMTCOUNT);
-    String IRB_APPROVE_COUNT = (String)map.get("IRB_APPROVE_COUNT");
-    if (IRB_APPROVE_COUNT == null) {
-      IRB_APPROVE_COUNT = "";
-    }
-
-    _map.put("IRB_APPROVE_COUNT", IRB_APPROVE_COUNT);
-    _map.put("IRC_BACKUP1", "");
-    _map.put("IRC_BACKUP2", "");
-    _map.put("IRC_BACKUP3", "");
-    _map.put("IRC_BACKUP4", "");
-    _map.put("IRC_BACKUP5", "");
-    _map.put("IRC_BACKUP6", "");
-    _map.put("IRC_BACKUP7", "");
-    _map.put("IRC_BACKUP8", "");
-    _map.put("IRC_BACKUP9", "");
-    _map.put("IRC_BACKUP10", "");
-    _map.put("IRC_BACKUP11", "");
-    _map.put("IRC_SENDATE", DateUtils.dateFormat(new Date(), "yyyyMMdd"));
-    _map.put("IRC_SENDTIME", DateUtils.dateFormat(new Date(), "HHmmss"));
-    return _map;
-  }
-
 
   /**
    * 新增方法
@@ -618,9 +614,8 @@ public class WeiboParserJob extends TimerTask {
     if (StringUtils.isBlank(strtemp)) {
       strtemp = "";
     }
-    datamap.put("IRB_SID",strtemp);
-    datamap.put("IRB_HKEY",strtemp);
-
+    datamap.put("IRC_SID",strtemp);
+    datamap.put("IRC_HKEY",strtemp);
 
     strtemp = (String)map.get("datatype");
     if (StringUtils.isBlank(strtemp)) {
@@ -636,8 +631,7 @@ public class WeiboParserJob extends TimerTask {
       //微博新闻。原枚举值13
       strtemp = "13";
     }
-    datamap.put("IRB_NEWSKIND",strtemp);
-
+    datamap.put("IRC_NEWSKIND",strtemp);
 
     strtemp = (String)map.get("urldate");
     if (StringUtils.isBlank(strtemp)) {
@@ -652,7 +646,7 @@ public class WeiboParserJob extends TimerTask {
       strtemp = date.format(formatter);
     }
     //--------------------------
-    datamap.put("IRB_URLDATE",strtemp);
+    datamap.put("IRC_URLDATE",strtemp);
 
     strtemp = (String)map.get("pubtime");
     if (StringUtils.isBlank(strtemp)) {
@@ -669,8 +663,7 @@ public class WeiboParserJob extends TimerTask {
       e.printStackTrace();
     }
     //-------------------
-    datamap.put("IRB_URLTIME",strtemp);
-
+    datamap.put("IRC_URLTIME",strtemp);
 
     strtemp = (String)map.get("savetime");
     if (StringUtils.isBlank(strtemp)) {
@@ -683,9 +676,10 @@ public class WeiboParserJob extends TimerTask {
       formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
       strtemp = date.format(formatter);
     }
+
     //--------------------------
-    datamap.put("IRB_LOADATE",strtemp);
-    datamap.put("IRB_LASTDATE",strtemp);
+    datamap.put("IRC_LOADATE",strtemp);
+    datamap.put("IRC_LASTDATE",strtemp);
 
     strtemp = (String)map.get("savetime");
     if (StringUtils.isBlank(strtemp)) {
@@ -701,28 +695,76 @@ public class WeiboParserJob extends TimerTask {
       e.printStackTrace();
     }
     //-------------------
-    datamap.put("IRB_LOADTIME",strtemp);
+    datamap.put("IRC_LOADTIME",strtemp);
     datamap.put("IRC_LASTTIME",strtemp);
+
 
     strtemp = (String)map.get("irauthors");
     if (StringUtils.isBlank(strtemp)) {
       strtemp = "";
     }
-    datamap.put("IRB_SCREEN_NAME",strtemp);
+    datamap.put("IRC_wechatname",strtemp);
+    datamap.put("IRC_wechatid","");
 
+    strtemp = (String)map.get("irsrcname");
+    if (StringUtils.isBlank(strtemp)) {
+      strtemp = "";
+    }
+    datamap.put("IRC_AUTHORS",strtemp);
+
+    strtemp = (String)map.get("title");
+    if (StringUtils.isBlank(strtemp)) {
+      strtemp = "";
+    }
+    datamap.put("IRC_URLTITLE",strtemp);
+
+    strtemp = (String)map.get("trsAbstract");
+    if (StringUtils.isBlank(strtemp)) {
+      strtemp = "";
+    }
+    datamap.put("IRC_abstract",strtemp);
+
+
+    strtemp = (String)map.get("irkeywords");
+    if (StringUtils.isBlank(strtemp)) {
+      strtemp = "";
+    }
+    if(!StringUtils.isBlank(strtemp) && strtemp.indexOf(";")!=-1){
+      datamap.put("IRN_KEYWORD",strtemp.replace(";","|"));
+    }else {
+      datamap.put("IRN_KEYWORD",strtemp);
+    }
 
     strtemp = (String)map.get("content");
     if (StringUtils.isBlank(strtemp)) {
       strtemp = "";
     }
-    datamap.put("IRB_CONTENT",strtemp);
+    datamap.put("IRC_CONTENT",strtemp);
 
 
     strtemp = (String)map.get("url");
     if (StringUtils.isBlank(strtemp)) {
       strtemp = "";
     }
-    datamap.put("IRB_URLNAME",strtemp);
+    datamap.put("IRC_URLNAME",strtemp);
+
+
+    datamap.put("IRC_RANK","");
+    datamap.put("IRC_RDCOUNT","");
+    datamap.put("IRC_PRCOUNT","");
+    datamap.put("IRC_BACKUP1","");
+    datamap.put("IRC_BACKUP2","");
+    datamap.put("IRC_BACKUP3","");
+    datamap.put("IRC_BACKUP4","");
+    datamap.put("IRC_BACKUP5","");
+    datamap.put("IRC_BACKUP6","");
+    datamap.put("IRC_BACKUP7","");
+    datamap.put("IRC_BACKUP8","");
+    datamap.put("IRC_BACKUP9","");
+    datamap.put("IRC_BACKUP10","");
+    datamap.put("IRC_BACKUP11","");
+    datamap.put("IRC_SENDATE",DateUtils.dateFormat(new Date(), "yyyyMMdd"));
+    datamap.put("IRC_SENDTIME",DateUtils.dateFormat(new Date(), "HHmmss"));
 
     strtemp = (String)map.get("trssimrank");
     if (StringUtils.isBlank(strtemp)) {
@@ -735,8 +777,6 @@ public class WeiboParserJob extends TimerTask {
       strtemp = "";
     }
     datamap.put("IRC_SIMID",strtemp);
-
-
 
     strtemp = (String)map.get("trssimvalue");
     if (StringUtils.isBlank(strtemp)) {
@@ -752,41 +792,9 @@ public class WeiboParserJob extends TimerTask {
     datamap.put("IRC_SIGNT",strtemp);
 
 
-//    strtemp = (String)map.get("irkeywords");
-//    if (StringUtils.isBlank(strtemp)) {
-//      strtemp = "";
-//    }
-//    if(!StringUtils.isBlank(strtemp) && strtemp.indexOf(";")!=-1){
-//      datamap.put("IRN_KEYWORD",strtemp.replace(";","|"));
-//    }else {
-//      datamap.put("IRN_KEYWORD",strtemp);
-//    }
-
-    datamap.put("IRN_KEYWORD","");
-    datamap.put("IRB_UID","");
-    datamap.put("IRB_RETWEETED_UID","");
-    datamap.put("IRB_RETWEETED_URL","");
-    datamap.put("IRB_RETWEETED_SCREEN_NAME","");
-    datamap.put("IRB_VIA","");
-    datamap.put("IRB_RTTCOUNT","");
-    datamap.put("IRB_COMMTCOUNT","");
-    datamap.put("IRB_APPROVE_COUNT","");
-    datamap.put("IRC_BACKUP1","");
-    datamap.put("IRC_BACKUP2","");
-    datamap.put("IRC_BACKUP3","");
-    datamap.put("IRC_BACKUP4","");
-    datamap.put("IRC_BACKUP5","");
-    datamap.put("IRC_BACKUP6","");
-    datamap.put("IRC_BACKUP7","");
-    datamap.put("IRC_BACKUP8","");
-    datamap.put("IRC_BACKUP9","");
-    datamap.put("IRC_BACKUP10","");
-    datamap.put("IRC_BACKUP11","");
-    datamap.put("IRC_SENDATE",DateUtils.dateFormat(new Date(), "yyyyMMdd"));
-    datamap.put("IRC_SENDTIME",DateUtils.dateFormat(new Date(), "HHmmss"));
-
-
-    //-------------------------
+    //------------------------------------
+//-------------------------
+    String trsArea = "";
     strtemp = (String)map.get("trsCust");
     if (StringUtils.isBlank(strtemp)) {
       strtemp = "";
@@ -794,9 +802,9 @@ public class WeiboParserJob extends TimerTask {
 
     strtemp = TRSFileUtil.trsJsonToStr("trsCust",strtemp);
 //    strtemp = TRSFileUtil.strFilterToNum("trsCust",strtemp);
-    String custid =TRSFileUtil.strFilterToNum("trsCust",strtemp);;
+    String custid =TRSFileUtil.strFilterToNum("trsCust",strtemp);
     datamap.put("CATALOG8",custid);
-    datamap.put("CATALOG9",custid);
+    datamap.put("CATALOG9",strtemp);
 
     strtemp = (String)map.get("trsCustRisk");
     if (StringUtils.isBlank(strtemp)) {
@@ -807,7 +815,6 @@ public class WeiboParserJob extends TimerTask {
     strtemp = TRSFileUtil.strFilterToNum("trsCustRisk",strtemp);
     datamap.put("CATALOG12",strtemp);
 
-    String trsArea = "";
 
     strtemp = (String)map.get("trsIndustry");
     if (StringUtils.isBlank(strtemp)) {
@@ -837,7 +844,7 @@ public class WeiboParserJob extends TimerTask {
       strtemp = EnterpriseNameUtil.StringSplitAdd(trsArea,strtemp);
     }
     datamap.put("CATALOG6",strtemp);
-    trsArea = strtemp;
+
 
 
     strtemp = (String)map.get("trsArea");
@@ -899,7 +906,7 @@ public class WeiboParserJob extends TimerTask {
 
     strtemp = TRSFileUtil.positiveOrNegative((String)map.get("trsBankAppraise"),(String)map.get("trsCustInvestment"));
     datamap.put("ZFM",strtemp);
-    //---------
+
 
 
 
@@ -908,125 +915,123 @@ public class WeiboParserJob extends TimerTask {
   }
 
 
-
   private Map<String, String> parserData(Map<String, Object> map) {
     Map<String, String> datamap = new HashMap();
-    Object IRC_NEWSKIND = map.get("IRB_NEWSKIND");
-    String IRC_NEWSKINDstr = "13";
+    Object IRC_NEWSKIND = map.get("IRC_NEWSKIND");
+    String IRC_NEWSKINDstr = "12";
     if (IRC_NEWSKIND != null) {
       IRC_NEWSKINDstr = String.valueOf(IRC_NEWSKIND);
     }
 
-    datamap.put("IRB_NEWSKIND", IRC_NEWSKINDstr);
-    Object IRC_HKEY = map.get("IRB_HKEY");
+    datamap.put("IRC_NEWSKIND", IRC_NEWSKINDstr);
+    Object IRC_HKEY = map.get("IRC_HKEY");
     String IRC_HKEYstr = "";
     if (IRC_HKEY != null) {
       IRC_HKEYstr = String.valueOf(IRC_HKEY);
     }
 
-    datamap.put("IRB_HKEY", IRC_HKEYstr);
-    datamap.put("IRB_SID", IRC_HKEYstr);
-    Object IRC_URLTIME = map.get("IRB_URLDATE");
+    datamap.put("IRC_HKEY", IRC_HKEYstr);
+    datamap.put("IRC_SID", IRC_HKEYstr);
+    Object IRC_URLDATE = map.get("IRC_URLDATE");
+    String IRC_URLDATEstr = "";
+    if (IRC_URLDATE != null) {
+      IRC_URLDATEstr = String.valueOf(IRC_URLDATE);
+    }
+
+    datamap.put("IRC_URLDATE", ParserUtil.getDateFromStr(IRC_URLDATEstr));
+    Object IRC_URLTIME = map.get("IRC_URLTIME");
     String IRC_URLTIMEstr = "";
     if (IRC_URLTIME != null) {
       IRC_URLTIMEstr = String.valueOf(IRC_URLTIME);
     }
 
-    datamap.put("IRB_URLDATE", ParserUtil.getDateFromStr(IRC_URLTIMEstr));
-    datamap.put("IRB_URLTIME", ParserUtil.getTimeFromStr(IRC_URLTIMEstr));
-    Object IRC_LOADTIME = map.get("IRB_LOADTIME");
+    datamap.put("IRC_URLTIME", ParserUtil.getTimeFromStr(IRC_URLTIMEstr));
+    Object IRC_LOADTIME = map.get("IRC_LOADTIME");
     String IRC_LOADTIMEstr = "";
     if (IRC_LOADTIME != null) {
       IRC_LOADTIMEstr = String.valueOf(IRC_LOADTIME);
     }
 
-    datamap.put("IRB_LOADATE", ParserUtil.getDateFromStr(IRC_LOADTIMEstr));
-    datamap.put("IRB_LOADTIME", ParserUtil.getTimeFromStr(IRC_LOADTIMEstr));
-    Object IRC_LASTTIME = map.get("IRB_LASTTIME");
+    datamap.put("IRC_LOADATE", ParserUtil.getDateFromStr(IRC_LOADTIMEstr));
+    datamap.put("IRC_LOADTIME", ParserUtil.getTimeFromStr(IRC_LOADTIMEstr));
+    Object IRC_LASTTIME = map.get("IRC_LASTTIME");
     String IRC_LASTTIMEstr = "";
     if (IRC_LASTTIME != null) {
       IRC_LASTTIMEstr = String.valueOf(IRC_LASTTIME);
     }
 
-    datamap.put("IRB_LASTDATE", ParserUtil.getDateFromStr(IRC_LASTTIMEstr));
-    datamap.put("IRB_LASTTIME", ParserUtil.getTimeFromStr(IRC_LASTTIMEstr));
-    Object IRB_UID = map.get("IRB_UID");
-    String IRB_UIDstr = "";
-    if (IRB_UID != null) {
-      IRB_UIDstr = String.valueOf(IRB_UID);
+    datamap.put("IRC_LASTDATE", ParserUtil.getDateFromStr(IRC_LASTTIMEstr));
+    datamap.put("IRC_LASTTIME", ParserUtil.getTimeFromStr(IRC_LASTTIMEstr));
+    Object IRC_wechatname = map.get("IRC_wechatname");
+    String IRC_wechatnamestr = "";
+    if (IRC_wechatname != null) {
+      IRC_wechatnamestr = String.valueOf(IRC_wechatname);
     }
 
-    datamap.put("IRB_UID", ParserUtil.parseStr(IRB_UIDstr, InitParam.RN_SM));
-    Object IRB_SCREEN_NAME = map.get("IRB_SCREEN_NAME");
-    String IRB_SCREEN_NAMEstr = "";
-    if (IRB_SCREEN_NAME != null) {
-      IRB_SCREEN_NAMEstr = String.valueOf(IRB_SCREEN_NAME);
+    datamap.put("IRC_wechatname", ParserUtil.parseStr(IRC_wechatnamestr, InitParam.RN_SM));
+    Object IRC_wechatid = map.get("IRC_wechatid");
+    String IRC_wechatidstr = "";
+    if (IRC_wechatid != null) {
+      IRC_wechatidstr = String.valueOf(IRC_wechatid);
     }
 
-    datamap.put("IRB_SCREEN_NAME", ParserUtil.parseStr(IRB_SCREEN_NAMEstr, InitParam.RN_SM));
-    Object IRB_RETWEETED_UID = map.get("IRB_RETWEETED_UID");
-    String IRB_RETWEETED_UIDstr = "";
-    if (IRB_RETWEETED_UID != null) {
-      IRB_RETWEETED_UIDstr = String.valueOf(IRB_RETWEETED_UID);
+    datamap.put("IRC_wechatid", ParserUtil.parseStr(IRC_wechatidstr, InitParam.RN_SM));
+    Object IRC_AUTHORS = map.get("IRC_AUTHORS");
+    String IRC_AUTHORSstr = "";
+    if (IRC_AUTHORS != null) {
+      IRC_AUTHORSstr = String.valueOf(IRC_AUTHORS);
     }
 
-    datamap.put("IRB_RETWEETED_UID", ParserUtil.parseStr(IRB_RETWEETED_UIDstr, InitParam.RN_SM));
-    Object IRB_RETWEETED_URL = map.get("IRB_RETWEETED_URL");
-    String IRB_RETWEETED_URLstr = "";
-    if (IRB_RETWEETED_URL != null) {
-      IRB_RETWEETED_URLstr = String.valueOf(IRB_RETWEETED_URL);
+    datamap.put("IRC_AUTHORS", ParserUtil.parseStr(IRC_AUTHORSstr, InitParam.RN_SM));
+    Object IRC_URLTITLE = map.get("IRC_URLTITLE");
+    String IRC_URLTITLEstr = "";
+    if (IRC_URLTITLE != null) {
+      IRC_URLTITLEstr = String.valueOf(IRC_URLTITLE);
     }
 
-    datamap.put("IRB_RETWEETED_URL", ParserUtil.parseStr(IRB_RETWEETED_URLstr, InitParam.RN_SM));
-    Object IRB_RETWEETED_SCREEN_NAME = map.get("IRB_RETWEETED_SCREEN_NAME");
-    String IRB_RETWEETED_SCREEN_NAMEstr = "";
-    if (IRB_RETWEETED_SCREEN_NAME != null) {
-      IRB_RETWEETED_SCREEN_NAMEstr = String.valueOf(IRB_RETWEETED_SCREEN_NAME);
+    datamap.put("IRC_URLTITLE", ParserUtil.parseStr(IRC_URLTITLEstr, InitParam.RN_SM));
+    Object IRC_abstract = map.get("IRC_abstract");
+    String IRC_abstractstr = "";
+    if (IRC_abstract != null) {
+      IRC_abstractstr = String.valueOf(IRC_abstract);
     }
 
-    datamap.put("IRB_RETWEETED_SCREEN_NAME", ParserUtil.parseStr(IRB_RETWEETED_SCREEN_NAMEstr, InitParam.RN_SM));
-    Object IRB_CONTENT = map.get("IRB_CONTENT");
-    String IRB_CONTENTstr = "";
-    if (IRB_CONTENT != null) {
-      IRB_CONTENTstr = String.valueOf(IRB_CONTENT);
+    datamap.put("IRC_abstract", ParserUtil.parseStr(IRC_abstractstr, InitParam.RN_SM));
+    Object IRC_CONTENT = map.get("IRC_CONTENT");
+    String IRC_CONTENTstr = "";
+    if (IRC_CONTENT != null) {
+      IRC_CONTENTstr = String.valueOf(IRC_CONTENT);
     }
 
-    datamap.put("IRB_CONTENT", ParserUtil.parseStr(IRB_CONTENTstr, InitParam.RN_SM));
-    Object IRB_URLNAME = map.get("IRB_URLNAME");
-    String IRB_URLNAMEstr = "";
-    if (IRB_URLNAME != null) {
-      IRB_URLNAMEstr = String.valueOf(IRB_URLNAME);
+    datamap.put("IRC_CONTENT", ParserUtil.parseStr(IRC_CONTENTstr, InitParam.RN_SM));
+    Object IRC_URLNAME = map.get("IRC_URLNAME");
+    String IRC_URLNAMEstr = "";
+    if (IRC_URLNAME != null) {
+      IRC_URLNAMEstr = String.valueOf(IRC_URLNAME);
     }
 
-    datamap.put("IRB_URLNAME", ParserUtil.parseStr(IRB_URLNAMEstr, InitParam.RN_SM));
-    Object IRB_VIA = map.get("IRB_VIA");
-    String IRB_VIAstr = "";
-    if (IRB_VIA != null) {
-      IRB_VIAstr = String.valueOf(IRB_VIA);
+    datamap.put("IRC_URLNAME", ParserUtil.parseStr(IRC_URLNAMEstr, InitParam.RN_SM));
+    Object IRC_RANK = map.get("IRC_RANK");
+    String IRC_RANKstr = "";
+    if (IRC_RANK != null) {
+      IRC_RANKstr = String.valueOf(IRC_RANK);
     }
 
-    datamap.put("IRB_VIA", ParserUtil.parseStr(IRB_VIAstr, InitParam.RN_SM));
-    Object IRB_RTTCOUNT = map.get("IRB_RTTCOUNT");
-    String IRB_RTTCOUNTstr = "";
-    if (IRB_RTTCOUNT != null) {
-      IRB_RTTCOUNTstr = String.valueOf(IRB_RTTCOUNT);
+    datamap.put("IRC_RANK", ParserUtil.parseStr(IRC_RANKstr, InitParam.RN_SM));
+    Object IRC_RDCOUNT = map.get("IRC_RDCOUNT");
+    String IRC_RDCOUNTstr = "";
+    if (IRC_RDCOUNT != null) {
+      IRC_RDCOUNTstr = String.valueOf(IRC_RDCOUNT);
     }
 
-    datamap.put("IRB_RTTCOUNT", ParserUtil.parseStr(IRB_RTTCOUNTstr, InitParam.RN_SM));
-    Object IRB_COMMTCOUNT = map.get("IRB_COMMTCOUNT");
-    String IRB_COMMTCOUNTstr = "";
-    if (IRB_COMMTCOUNT != null) {
-      IRB_COMMTCOUNTstr = String.valueOf(IRB_COMMTCOUNT);
+    datamap.put("IRC_RDCOUNT", ParserUtil.parseStr(IRC_RDCOUNTstr, InitParam.RN_SM));
+    Object IRC_PRCOUNT = map.get("IRC_PRCOUNT");
+    String IRC_PRCOUNTstr = "";
+    if (IRC_PRCOUNT != null) {
+      IRC_PRCOUNTstr = String.valueOf(IRC_PRCOUNT);
     }
 
-    datamap.put("IRB_COMMTCOUNT", ParserUtil.parseStr(IRB_COMMTCOUNTstr, InitParam.RN_SM));
-    Object IRB_APPROVE_COUNT = map.get("IRB_APPROVE_COUNT");
-    String IRB_APPROVE_COUNTstr = "";
-    if (IRB_APPROVE_COUNT != null) {
-      IRB_APPROVE_COUNTstr = String.valueOf(IRB_APPROVE_COUNT);
-    }
-
-    datamap.put("IRB_APPROVE_COUNT", ParserUtil.parseStr(IRB_APPROVE_COUNTstr, InitParam.RN_SM));
+    datamap.put("IRC_PRCOUNT", ParserUtil.parseStr(IRC_PRCOUNTstr, InitParam.RN_SM));
     Object CATALOG3 = map.get("CATALOG3");
     String CATALOG3str = "";
     if (CATALOG3 != null) {
@@ -1109,7 +1114,7 @@ public class WeiboParserJob extends TimerTask {
 
   private void readfilelist() {
     String dateStr = DateUtils.dateFormat(new Date(), "yyyyMMdd");
-    File f = new File(InitParam.WEIBOTO_PATH + "/" + dateStr);
+    File f = new File(InitParam.WEIXINTO_PATH + "/" + dateStr);
     if (!f.exists()) {
       f.mkdirs();
     }
@@ -1128,7 +1133,7 @@ public class WeiboParserJob extends TimerTask {
       fsu.mkdirs();
     }
 
-    File newspath = new File(InitParam.LOCAL_WEIBO_PATH);
+    File newspath = new File(InitParam.WEIXIN_PATH);
     this.oklist = newspath.listFiles(new FileFilter() {
       public boolean accept(File pathname) {
         return pathname.getName().endsWith("ok");

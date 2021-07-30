@@ -5,22 +5,6 @@
 
 package com.abc;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
-import java.util.UUID;
-
 import com.abc.util.EnterpriseNameUtil;
 import com.abc.util.TRSFileUtil;
 import com.abc.util.ZipUtil;
@@ -28,11 +12,20 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-public class WeiboParserJob extends TimerTask {
-  private static final Logger logger = Logger.getLogger(WeiboParserJob.class);
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+public class WeiboParserJob_bak20210728 extends TimerTask {
+  private static final Logger logger = Logger.getLogger(WeiboParserJob_bak20210728.class);
   private File[] oklist = null;
 
-  public WeiboParserJob() {
+  public WeiboParserJob_bak20210728() {
   }
 
   public void run() {
@@ -58,7 +51,7 @@ public class WeiboParserJob extends TimerTask {
 
 
   public static void weiBoRun(Map<String,String> txtmap) {
-    WeiboParserJob weiboParserJob = new WeiboParserJob();
+    WeiboParserJob_bak20210728 weiboParserJob = new WeiboParserJob_bak20210728();
     logger.info("微博数据拆分任务开始");
     weiboParserJob.readfilelist();
     File[] var4 = weiboParserJob.oklist;
@@ -76,7 +69,7 @@ public class WeiboParserJob extends TimerTask {
         e.printStackTrace();
       }
     }
-    String weiboFile = InitParam.LOCAL_WEIBO_PATH+"/";
+    String weiboFile = InitParam.WEIBO_PATH+"/";
     ZipUtil.delAllFile(weiboFile);
     logger.info("微博数据拆分任务结束");
   }
@@ -126,7 +119,7 @@ public class WeiboParserJob extends TimerTask {
 
   private boolean readtrsfile(File okfile,Map<String,String> txtmap) throws IOException {
     String filename = okfile.getName().replace(".ok", ".trs");
-    File trsfile = new File(InitParam.LOCAL_WEIBO_PATH + "/" + filename);
+    File trsfile = new File(InitParam.WEIBO_PATH + "/" + filename);
     if (trsfile.exists()) {
       logger.info(trsfile.getAbsoluteFile());
     }
@@ -1128,7 +1121,7 @@ public class WeiboParserJob extends TimerTask {
       fsu.mkdirs();
     }
 
-    File newspath = new File(InitParam.LOCAL_WEIBO_PATH);
+    File newspath = new File(InitParam.WEIBO_PATH);
     this.oklist = newspath.listFiles(new FileFilter() {
       public boolean accept(File pathname) {
         return pathname.getName().endsWith("ok");

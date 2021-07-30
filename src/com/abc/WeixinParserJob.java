@@ -77,7 +77,7 @@ public class WeixinParserJob extends TimerTask {
         e.printStackTrace();
       }
     }
-    String weixinFile = InitParam.WEIXIN_PATH+"/";
+    String weixinFile = InitParam.LOCAL_WEIXIN_PATH+"/";
     ZipUtil.delAllFile(weixinFile);
     logger.info("微信数据拆分任务结束");
   }
@@ -127,7 +127,7 @@ public class WeixinParserJob extends TimerTask {
 
   private boolean readtrsfile(File okfile,Map<String,String> txtmap) throws IOException {
     String filename = okfile.getName().replace(".ok", ".trs");
-    File trsfile = new File(InitParam.WEIXIN_PATH + "/" + filename);
+    File trsfile = new File(InitParam.LOCAL_WEIXIN_PATH + "/" + filename);
     if (trsfile.exists()) {
       logger.info(trsfile.getAbsoluteFile());
     }
@@ -251,6 +251,7 @@ public class WeixinParserJob extends TimerTask {
             datamap.put(key,value);
           }
         } while(datamap == null);
+        if(datamap.size() != 0){
         List<Map<String, String>> splits = this.splitData(datamap);
         if(splits.size()==0) {
           Map tempmap = new HashMap();
@@ -313,24 +314,25 @@ public class WeixinParserJob extends TimerTask {
               continue label127;
             }
 
-            map2 = (Map)var46.next();
-          } while(map2 == null);
+            map2 = (Map) var46.next();
+          } while (map2 == null);
 
           String slitLine = "";
 
-          for(int j = 0; j < InitParam.SPLIT_FILEDSES.length; ++j) {
+          for (int j = 0; j < InitParam.SPLIT_FILEDSES.length; ++j) {
             if (j > 0) {
               slitLine = slitLine + InitParam.SPLIT_SM;
             }
 
-            if (StringUtils.isBlank((String)map2.get(InitParam.SPLIT_FILEDSES[j]))) {
+            if (StringUtils.isBlank((String) map2.get(InitParam.SPLIT_FILEDSES[j]))) {
               slitLine = slitLine;
             } else {
-              slitLine = slitLine + (String)map2.get(InitParam.SPLIT_FILEDSES[j]);
+              slitLine = slitLine + (String) map2.get(InitParam.SPLIT_FILEDSES[j]);
             }
           }
 
           this.write(weixinsplitwriter, slitLine);
+        }
         }
       }
     } else {
@@ -359,11 +361,13 @@ public class WeixinParserJob extends TimerTask {
       datamap.put(mapkey[j], trsstr);
     }
     //整合表里面没有值的   全部设置为空
-    String []mapkon ={"IRU_AUTHORID","IRU_RETWEETED_SCREEN_ID","IRU_RETWEETED_SCREEN_NAME","IRU_RETWEETED_URL","IRU_URLTITLE","IRU_abstract","IRU_SITENAME","channel","IRU_SRCNAME","IRU_VIA","IRU_RTTCOUNT","IRU_COMMTCOUNT","IRU_GROUPNAME","IRU_BBSNUM","IRU_NRESERVED2","IRU_NRESERVED3","IRU_BACKUP12"};
+    String []mapkon ={"IRU_AUTHORID","IRU_RETWEETED_SCREEN_ID","IRU_RETWEETED_SCREEN_NAME","IRU_RETWEETED_URL","IRU_URLTITLE","IRU_abstract","channel","IRU_SRCNAME","IRU_VIA","IRU_RTTCOUNT","IRU_COMMTCOUNT","IRU_GROUPNAME","IRU_BBSNUM","IRU_NRESERVED2","IRU_NRESERVED3","IRU_BACKUP12"};
     for (int j = 0; j < mapkon.length; j++) {
+
       datamap.put(mapkon[j], "");
     }
-
+    //添加默认值
+    datamap.put("IRU_SITENAME", "微信");
     return datamap;
   }
 
@@ -727,7 +731,8 @@ public class WeixinParserJob extends TimerTask {
 
     strtemp = (String)map.get("trsAbstract");
     if (StringUtils.isBlank(strtemp)) {
-      strtemp = "";
+      Map<String, String> datamapnull = new HashMap();
+      return datamapnull;
     }
     datamap.put("IRC_abstract",strtemp);
 
@@ -1140,7 +1145,7 @@ public class WeixinParserJob extends TimerTask {
       fsu.mkdirs();
     }
 
-    File newspath = new File(InitParam.WEIXIN_PATH);
+    File newspath = new File(InitParam.LOCAL_WEIXIN_PATH);
     this.oklist = newspath.listFiles(new FileFilter() {
       public boolean accept(File pathname) {
         return pathname.getName().endsWith("ok");
